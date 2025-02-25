@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Societies Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+        }
+        .header {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            padding: 5px;
+        }
+        .societies h2 {
+            margin-bottom: 10px;
+        }
+        .society-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .society-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar a {
+            text-decoration: none;
+            color: black;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">Eventure Clubs Page ▼</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search for events">
+            🔍
+        </div>
+        <div class="clubs">
+            <h2>Societies</h2>
+            <div class="clubs-grid">
+                <div class="society-card" style="background: #173D13;">IEEE</div>
+                <div class="society-card" style="background: #A42C1F;">ACM</div>
+                <div class="society-card" style="background: #D56BA0;">Archery</div>
+                <div class="society-card" style="background: #E0477F;">DDD Club</div>
+                <div class="society-card" style="background: #3A5F8A;">Robotics Club</div>
+                <div class="society-card" style="background: #FFC107;">Secular Club</div>
+                <div class="society-card" style="background: #A45E1F;">Classical Music Club</div>
+                <div class="society-card" style="background: #1FA49E;">Change Starts Here</div>
+                <div class="society-card" style="background: #8B1C36;">Chess Club</div>
+                <div class="society-card" style="background: #666666;">Insight</div>
+            </div>
+        </div>
+    </div>
+    <div class="navbar">
+        <a href="#">🏠 Home</a>
+        <a href="#">🔍 Search</a>
+        <a href="#">📅 Events</a>
+        <a href="#">👤 Profile</a>
+    </div>
+</body>
+</html>
