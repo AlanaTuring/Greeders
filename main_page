@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IEEE Club Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1E3A72;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: white;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+        }
+        .logo {
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
+        .description {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .button {
+            background: white;
+            color: black;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            width: 80%;
+            margin-bottom: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        .toggle-button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .list-button {
+            background: #007BFF;
+            color: white;
+        }
+        .calendar-button {
+            background: #D3D3D3;
+            color: black;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .navbar a {
+            text-decoration: none;
+            color: black;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="IEEE_logo.png" alt="IEEE Logo" class="logo">
+        <div class="description">Description<br>view as calendar or list</div>
+        <button class="button">Club Description</button>
+        <div class="toggle-container">
+            <button class="toggle-button list-button">View as List</button>
+            <button class="toggle-button calendar-button">or Calendar</button>
+        </div>
+    </div>
+    <div class="navbar">
+        <a href="#">🏠 Home</a>
+        <a href="#">🔍 Search</a>
+        <a href="#">📅 Events</a>
+        <a href="#">👤 Profile</a>
+    </div>
+</body>
+</html>
