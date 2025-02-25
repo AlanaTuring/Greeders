@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>University Events - Favorites</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            margin: 0;
+
+            padding: 0;
+
+            background-color: #f4f4f4;
+
+        }
+
+        header {
+
+            background: #333;
+
+            color: white;
+
+            text-align: center;
+
+            padding: 1rem;
+
+        }
+
+        main {
+
+            max-width: 800px;
+
+            margin: 20px auto;
+
+            padding: 20px;
+
+            background: white;
+
+            border-radius: 8px;
+
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
+        }
+
+        h2 {
+
+            border-bottom: 2px solid #333;
+
+            padding-bottom: 5px;
+
+        }
+
+        .event-list, .favorites-list {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 15px;
+
+        }
+
+        .event {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 10px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 5px;
+
+            background: #fff;
+
+        }
+
+        .favorite-btn {
+
+            background: none;
+
+            border: none;
+
+            font-size: 1.5rem;
+
+            cursor: pointer;
+
+            transition: color 0.3s;
+
+        }
+
+        .favorite-btn.favorited {
+
+            color: red;
+
+        }
+
+    </style>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const favoriteButtons = document.querySelectorAll(".favorite-btn");
+
+            const favoritesList = document.querySelector(".favorites-list");
+
+            let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+ 
+
+            function updateFavorites() {
+
+                favoritesList.innerHTML = "";
+
+                favorites.forEach(event => {
+
+                    const favItem = document.createElement("div");
+
+                    favItem.classList.add("event");
+
+                    favItem.innerHTML = <h3>${event.title}</h3>;
+
+                    favoritesList.appendChild(favItem);
+
+                });
+
+                localStorage.setItem("favorites", JSON.stringify(favorites));
+
+            }
+
+ 
+
+            favoriteButtons.forEach(button => {
+
+                button.addEventListener("click", function() {
+
+                    const eventElement = this.parentElement;
+
+                    const eventId = eventElement.getAttribute("data-id");
+
+                    const eventTitle = eventElement.querySelector("h3").textContent;
+
+                    const eventOrganizer = eventElement.querySelector("p").textContent;
+
+                   
+
+                    if (favorites.some(event => event.id === eventId)) {
+
+                        favorites = favorites.filter(event => event.id !== eventId);
+
+                        this.classList.remove("favorited");
+
+                    } else {
+
+                        favorites.push({ id: eventId, title: eventTitle, organizer: eventOrganizer });
+
+                        this.classList.add("favorited");
+
+                    }
+
+ 
+
+                    updateFavorites();
+
+                });
+
+            });
+
+           
+
+            updateFavorites();
+
+        });
+
+    </script>
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>University Events</h1>
+
+    </header>
+
+    <main>
+
+        <section id="events">
+
+            <h2>Upcoming Events</h2>
+
+            <div class="event-list">
+
+                <div class="event" data-id="1">
+
+                    <h3>AI & Machine Learning Seminar</h3>
+
+                    <p>Organized by CS Society</p>
+
+                    <button class="favorite-btn">❤</button>
+
+                </div>
+
+                <div class="event" data-id="2">
+
+                    <h3>Debate on Ethics & Morality</h3>
+
+                    <p>Hosted by Philosophy Department</p>
+
+                    <button class="favorite-btn">❤</button>
+
+                </div>
+
+                <div class="event" data-id="3">
+
+                    <h3>Entrepreneurship Bootcamp</h3>
+
+                    <p>Organized by Business Society</p>
+
+                    <button class="favorite-btn">❤</button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section id="favorites">
+
+            <h2>Your Favorites</h2>
+
+            <div class="favorites-list"></div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
