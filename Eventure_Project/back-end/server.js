@@ -20,7 +20,7 @@ app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api/organizers", require("./routes/organizerRoutes"));
 app.use("/api/students", require("./routes/studentRoutes"));
 app.use("/api/clubs", require("./routes/ClubRoutes"));
-app.use("/api/societies", require("./routes/SocietyRoutes"));  // New route for societies
+app.use("/api/societies", require("./routes/societyRoutes"));  // New route for societies
 app.use("/api/faculties", require("./routes/facultyRoutes"));  // New route for faculties
 
 const PORT = process.env.PORT || 5000;
