@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const multer = require("multer");
+const path = require("path");
 
 dotenv.config();
 
@@ -23,5 +25,11 @@ app.use("/api/clubs", require("./routes/ClubRoutes"));
 app.use("/api/societies", require("./routes/societyRoutes"));  // New route for societies
 app.use("/api/faculties", require("./routes/facultyRoutes"));  // New route for faculties
 
+// Add the upload route for logos here
+app.use("/api", require("./routes/uploadRoutes")); // This line connects the upload route
+// Serve static files from the "logos" folder
+app.use("/logos", express.static(path.join(__dirname, "logos")));
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
