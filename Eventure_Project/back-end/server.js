@@ -26,7 +26,7 @@ app.use("/api/societies", require("./routes/societyRoutes"));  // New route for 
 app.use("/api/faculties", require("./routes/facultyRoutes"));  // New route for faculties
 
 // Add the upload route for logos here
-app.use("/api", require("./routes/uploadRoutes")); // This line connects the upload route
+app.use("/api", require("./routes/logosRoutes")); // This line connects the upload route
 // Serve static files from the "logos" folder
 app.use("/logos", express.static(path.join(__dirname, "logos")));
 
