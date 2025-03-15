@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"; 
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import ieeeLogo from "../../assets/ieee-logo.png"; // Correct import for the logo image
 
-const events = {
-  "2025-03-15": ["Tech Talk with Industry Experts", "Workshop on AI"],
-  "2025-03-20": ["IEEE Coding Challenge"],
-  "2025-03-25": ["Annual IEEE Conference"],
-  // Add more events here...
-};
-
-const IEEE = () => {
+const ClubPage = () => {
+  const { id } = useParams();
+  const [club, setClub] = useState(null);
   const [date, setDate] = useState(new Date());
   const [eventsForDate, setEventsForDate] = useState([]);
-  
-  // Function to format the date as 'YYYY-MM-DD'
+
   const formatDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -22,46 +16,54 @@ const IEEE = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // Normalize the selected date (set the time to midnight)
-  const normalizeDate = (date) => {
-    const normalizedDate = new Date(date);
-    normalizedDate.setHours(0, 0, 0, 0); // Set time to midnight
-    return normalizedDate;
-  };
-
-  // Track and update events for the selected date
   useEffect(() => {
-    const normalizedDate = normalizeDate(date);
-    const formattedDate = formatDate(normalizedDate);
-    setEventsForDate(events[formattedDate] || []);
-  }, [date]);
+    fetch(`http://localhost:5001/api/clubs/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched club data:", data); // Debugging line
+        setClub(data);
+      })
+      .catch((error) => console.error("Error fetching club data:", error));
+  }, [id]);
+
+  useEffect(() => {
+    if (club && club.events) {
+      const formattedDate = formatDate(date);
+      const filteredEvents = club.events.filter(
+        (event) => formatDate(new Date(event.date)) === formattedDate
+      );
+      setEventsForDate(filteredEvents);
+    }
+  }, [date, club]);
+
+  if (!club) return <div>Loading...</div>;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.overlay}></div> {/* Transparent Overlay */}
-      <h1 style={styles.header}>IEEE Club</h1>
+    <div
+      style={{
+        ...styles.container,
+        backgroundImage: `url(/pics/${club.logo})`,
 
-      {/* Card Section */}
+      }}
+    >
+      <div style={styles.overlay}></div>
+      <h1 style={styles.header}>{club.name}</h1>
+
       <div style={styles.card}>
-        <p style={styles.description}>
-          The AUB IEEE Club aims to arouse student interest in science, engineering, and
-          technology through various programs, conferences, and other fun activities.
-        </p>
+        <p style={styles.description}>{club.description}</p>
       </div>
 
-      {/* Calendar Section */}
       <h2 style={styles.calendarTitle}>Upcoming Events</h2>
       <div style={styles.calendarContainer}>
         <Calendar onChange={setDate} value={date} />
       </div>
 
-      {/* Event List */}
       <div style={styles.eventList}>
         <h3>Events on {formatDate(date)}:</h3>
         {eventsForDate.length > 0 ? (
           <ul>
             {eventsForDate.map((event, index) => (
-              <li key={index}>{event}</li>
+              <li key={index}>{event.title}</li>
             ))}
           </ul>
         ) : (
@@ -77,8 +79,7 @@ const styles = {
     textAlign: "center",
     padding: "20px",
     width: "100%",
-    backgroundColor: "rgba(148, 172, 196, 0.8)", // Changed background color
-    backgroundImage: `url(${ieeeLogo})`, // Set IEEE logo as background
+    backgroundColor: "rgba(148, 172, 196, 0.8)",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -91,7 +92,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(148, 172, 196, 0.5)", // Adjusted overlay color
+    backgroundColor: "rgba(148, 172, 196, 0.5)",
     zIndex: 1,
   },
   header: {
@@ -103,7 +104,7 @@ const styles = {
     position: "relative",
   },
   card: {
-    backgroundColor: "#3f5c92", // Changed description box color
+    backgroundColor: "white",
     padding: "20px",
     borderRadius: "15px",
     maxWidth: "600px",
@@ -111,8 +112,8 @@ const styles = {
     zIndex: 2,
   },
   description: {
-    color: "white",
-    fontSize: "20px",
+    color: "black",
+    fontSize: "25px",
     lineHeight: "1.5",
   },
   calendarTitle: {
@@ -141,4 +142,4 @@ const styles = {
   },
 };
 
-export default IEEE;
+export default ClubPage;

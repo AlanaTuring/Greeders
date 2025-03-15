@@ -1,30 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import backgroundImage from '../assets/GreenOval.jpg'; // Correct image import
 
-const faculties = [
-  { name: "FAS", color: "#9c324f" },
-  { name: "FM", color: "#9c324f" },
-  { name: "MSFEA", color: "#9c324f" },
-  { name: "FHS", color: "#9c324f" },
-  { name: "OSB", color: "#9c324f" },
-  { name: "FAFS", color: "#9c324f" },
-  { name: "HSON", color: "#9c324f" },
-];
-
 const Faculties = () => {
+  const [faculties, setFaculties] = useState([]);
+
+  useEffect(() => {
+    const fetchFaculties = async () => {
+      try {
+        const response = await fetch("http://localhost:5001/api/faculties"); // Replace with your actual API endpoint
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const facultiesData = await response.json();
+        setFaculties(facultiesData); // Set the fetched data in the state
+      } catch (error) {
+        console.error("Error fetching faculties:", error);
+      }
+    };
+
+    fetchFaculties(); // Call the function to fetch the faculties when the component mounts
+  }, []); // Empty dependency array ensures this effect runs only once on mount
+
   return (
     <div style={styles.container}>
       <div style={styles.overlay}></div> {/* Overlay with transparent background */}
       <h1 style={styles.header}>Faculties</h1>
       <div style={styles.grid}>
-        {faculties.map((faculty, index) => (
-          <div
-            key={index}
-            className="faculty-card" // Apply the CSS class for hover effect
-            style={{ ...styles.card, backgroundColor: faculty.color }}
+        {faculties.map((faculty) => (
+          <Link
+            key={faculty._id} // Use the faculty's _id from MongoDB for unique key
+            to={`/faculties/${faculty._id}`} // Navigate to a detailed page with the faculty's _id
+            style={{ textDecoration: "none", position: "relative", zIndex: 2 }}
           >
-            <h2 style={styles.text}>{faculty.name}</h2>
-          </div>
+            <div
+              className="faculty-card"
+              style={{ ...styles.card, backgroundColor: faculty.color || "#9c324f" }} // Use the color from the database, or fallback to a default
+            >
+              <h2 style={styles.text}>{faculty.name}</h2>
+            </div>
+          </Link>
         ))}
       </div>
     </div>
@@ -49,7 +64,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(167, 97, 117, 0.5)", // Using rgba format for #a76175 with opacity 0.8
+    backgroundColor: "rgba(167, 97, 117, 0.5)", // Transparent overlay with rgba
     zIndex: 1, // Ensure the overlay stays on top of the background image
   },
   header: {
@@ -88,6 +103,5 @@ const styles = {
     fontFamily: "New Century Schoolbook, TeX Gyre Schola, serif",
   },
 };
-
 
 export default Faculties;

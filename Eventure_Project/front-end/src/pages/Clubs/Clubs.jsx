@@ -1,35 +1,44 @@
-import React from "react";
-import { Link } from "react-router-dom"; // Import Link for navigation
-import backgroundImage from "../../assets/GreenOval.jpg"; // Background image
-
-const clubs = [
-  { name: "ACM", color: "#9c324f" },
-  { name: "CSH", color: "#9c324f" },
-  { name: "Archery", color: "#9c324f" },
-  { name: "Classical Music Club", color: "#9c324f" },
-  { name: "DDD Club", color: "#9c324f" },
-  { name: "Chess Club", color: "#9c324f" },
-  { name: "Robotics Club", color: "#9c324f" },
-  { name: "IEEE", color: "#9c324f", link: "/clubs/ieee" }, // Add link for IEEE
-  { name: "Secular Club", color: "#9c324f" },
-  { name: "Insight Club", color: "#9c324f" },
-  { name: "African Club", color: "#9c324f" },
-  { name: "Lebanese Heritage Club", color: "#9c324f" },
-];
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import backgroundImage from "../../assets/GreenOval.jpg";
 
 const Clubs = () => {
+  const [clubs, setClubs] = useState([]);
+
+  useEffect(() => {
+    const fetchClubs = async () => {
+      try {
+        // Adjust the URL if your backend is hosted elsewhere
+        const response = await fetch("http://localhost:5001/api/clubs");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const clubsData = await response.json();
+        setClubs(clubsData);
+      } catch (error) {
+        console.error("Error fetching clubs:", error);
+      }
+    };
+
+    fetchClubs();
+  }, []);
+
   return (
     <div style={styles.container}>
-      <div style={styles.overlay}></div> {/* Transparent Overlay */}
+      <div style={styles.overlay}></div>
       <h1 style={styles.header}>Clubs</h1>
       <div style={styles.grid}>
         {clubs.map((club, index) => (
           <Link
-            key={index}
-            to={club.link || "#"} // If there's a link, navigate, otherwise stay
-            style={{ textDecoration: "none", position: "relative", zIndex: 2 }} // Ensuring link is above overlay
+            key={club._id} // Use the club's _id from MongoDB, fallback to index if needed
+            // If you want to navigate to a club detail page, you can use the club's _id in the URL
+            to={club.link ? club.link : `/clubs/${club._id}`}
+            style={{ textDecoration: "none", position: "relative", zIndex: 2 }}
           >
-            <div className="club-card" style={{ ...styles.card, backgroundColor: club.color }}>
+            <div
+              className="club-card"
+              style={{ ...styles.card, backgroundColor: "#9c324f" }}
+            >
               <h2 style={styles.text}>{club.name}</h2>
             </div>
           </Link>
@@ -58,7 +67,7 @@ const styles = {
     right: 0,
     bottom: 0,
     backgroundColor: "rgba(167, 97, 117, 0.5)",
-    zIndex: 1, // Ensure overlay is behind content
+    zIndex: 1,
   },
   header: {
     fontSize: "100px",
@@ -86,7 +95,7 @@ const styles = {
     textDecoration: "none",
     boxSizing: "border-box",
     transition: "transform 0.3s ease",
-    zIndex: 2, // Ensure the card is above the overlay
+    zIndex: 2,
   },
   text: {
     color: "white",

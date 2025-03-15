@@ -11,9 +11,12 @@ app.use(cors());
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("MongoDB connected!"))
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log(mongoose.connection.name))
   .catch((err) => console.log(err));
+
+  console.log();
+
 
 // Routes
 app.use("/api/events", require("./routes/eventRoutes"));
@@ -23,5 +26,5 @@ app.use("/api/clubs", require("./routes/ClubRoutes"));
 app.use("/api/societies", require("./routes/SocietyRoutes"));  // New route for societies
 app.use("/api/faculties", require("./routes/facultyRoutes"));  // New route for faculties
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

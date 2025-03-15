@@ -1,33 +1,46 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import backgroundImage from '../assets/GreenOval.jpg'; // Correct image import
 
-const societies = [
-  { name: "Math Society", color: "#9c324f" },
-  { name: "BME Society", color: "#9c324f" },
-  { name: "Philosophy Society", color: "#9c324f" },
-  { name: "BSS", color: "#9c324f" },
-  { name: "CSSS", color: "#9c324f" },
-  { name: "CSS", color: "#9c324f" },
-  { name: "Biology Society", color: "#9c324f" },
-  { name: "Economics Society", color: "#9c324f" },
-  { name: "Arabic Society", color: "#9c324f" },
-  { name: "Engineering Society", color: "#9c324f" },
-];
-
 const SocietiesList = () => {
+  const [societies, setSocieties] = useState([]);
+
+  useEffect(() => {
+    const fetchSocieties = async () => {
+      try {
+        // Adjust the URL if your backend is hosted elsewhere
+        const response = await fetch("http://localhost:5001/api/societies"); // Replace with your backend route
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const societiesData = await response.json();
+        setSocieties(societiesData); // Store fetched societies in state
+      } catch (error) {
+        console.error("Error fetching societies:", error);
+      }
+    };
+
+    fetchSocieties(); // Fetch societies when the component mounts
+  }, []);
+
   return (
     <div style={styles.container}>
-      <div style={styles.overlay}></div> {/* Overlay with transparent background */}
+      <div style={styles.overlay}></div>
       <h1 style={styles.header}>Societies</h1>
       <div style={styles.grid}>
         {societies.map((society, index) => (
-          <div
-            key={index}
-            className="society-card" // Apply the CSS class for hover effect
-            style={{ ...styles.card, backgroundColor: society.color }}
+          <Link
+            key={society._id || index} // Use the society's _id from MongoDB, fallback to index if needed
+            to={`/societies/${society._id}`} // Link to a society detail page, replace with your actual path
+            style={{ textDecoration: "none", position: "relative", zIndex: 2 }}
           >
-            <h2 style={styles.text}>{society.name}</h2>
-          </div>
+            <div
+              className="society-card"
+              style={{ ...styles.card, backgroundColor: "#9c324f" }}
+            >
+              <h2 style={styles.text}>{society.name}</h2>
+            </div>
+          </Link>
         ))}
       </div>
     </div>

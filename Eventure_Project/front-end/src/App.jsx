@@ -4,8 +4,8 @@ import Home from "./pages/Home";
 import Societies from "./pages/SocietiesTemp";
 import Faculties from "./pages/Faculties";
 import Clubs from "./pages/Clubs/Clubs";
-import IEEE from "./pages/Clubs/IEEE";
-import Profile from "./pages/Profile"; // Import Profile page
+import ClubPage from "./pages/Clubs/ClubPage"; 
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -14,19 +14,18 @@ function App() {
         <nav style={styles.navbar}>
           <Link to="/" style={styles.navLink}>Home</Link>
           <Link to="/clubs" style={styles.navLink}>Clubs</Link>
-          <Link to="/clubs/ieee" style={styles.navLink}>IEEE</Link>
           <Link to="/societies" style={styles.navLink}>Societies</Link>
           <Link to="/faculties" style={styles.navLink}>Faculties</Link>
-          <Link to="/profile" style={styles.navLink}>Profile</Link> {/* Add Profile link */}
+          <Link to="/profile" style={styles.navLink}>Profile</Link>
         </nav>
 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/clubs" element={<Clubs />} />
-          <Route path="/clubs/ieee" element={<IEEE />} />
+          <Route path="/clubs/:id" element={<ClubPage />} />
           <Route path="/societies" element={<Societies />} />
           <Route path="/faculties" element={<Faculties />} />
-          <Route path="/profile" element={<Profile />} /> {/* Add Profile route */}
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
     </Router>
