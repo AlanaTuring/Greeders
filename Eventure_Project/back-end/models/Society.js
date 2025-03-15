@@ -10,7 +10,7 @@ const societySchema = new mongoose.Schema({
   events: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "event", // Refers to the Event model
+      ref: "Event", // Refers to the Event model
       required: true,
     },
   ],
@@ -19,7 +19,7 @@ const societySchema = new mongoose.Schema({
   organizers: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "organizer", // Refers to the Organizer model
+      ref: "Organizer", // Refers to the Organizer model
       required: true,
     },
   ],

@@ -1,44 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import backgroundImage from '../assets/GreenOval.jpg'; // Correct image import
+import backgroundImage from '../../assets/GreenOval.jpg'; // Correct image import
 
-const SocietiesList = () => {
-  const [societies, setSocieties] = useState([]);
+const Faculties = () => {
+  const [faculties, setFaculties] = useState([]);
 
   useEffect(() => {
-    const fetchSocieties = async () => {
+    const fetchFaculties = async () => {
       try {
-        // Adjust the URL if your backend is hosted elsewhere
-        const response = await fetch("http://localhost:5001/api/societies"); // Replace with your backend route
+        const response = await fetch("http://localhost:5001/api/faculties"); // Replace with your actual API endpoint
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const societiesData = await response.json();
-        setSocieties(societiesData); // Store fetched societies in state
+        const facultiesData = await response.json();
+        setFaculties(facultiesData); // Set the fetched data in the state
       } catch (error) {
-        console.error("Error fetching societies:", error);
+        console.error("Error fetching faculties:", error);
       }
     };
 
-    fetchSocieties(); // Fetch societies when the component mounts
-  }, []);
+    fetchFaculties(); // Call the function to fetch the faculties when the component mounts
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   return (
     <div style={styles.container}>
-      <div style={styles.overlay}></div>
-      <h1 style={styles.header}>Societies</h1>
+      <div style={styles.overlay}></div> {/* Overlay with transparent background */}
+      <h1 style={styles.header}>Faculties</h1>
       <div style={styles.grid}>
-        {societies.map((society, index) => (
+        {faculties.map((faculty) => (
           <Link
-            key={society._id || index} // Use the society's _id from MongoDB, fallback to index if needed
-            to={`/societies/${society._id}`} // Link to a society detail page, replace with your actual path
+            key={faculty._id} // Use the faculty's _id from MongoDB for unique key
+            to={`/faculties/${faculty._id}`} // Navigate to a detailed page with the faculty's _id
             style={{ textDecoration: "none", position: "relative", zIndex: 2 }}
           >
             <div
-              className="society-card"
-              style={{ ...styles.card, backgroundColor: "#9c324f" }}
+              className="faculty-card"
+              style={{ ...styles.card, backgroundColor: faculty.color || "#9c324f" }} // Use the color from the database, or fallback to a default
             >
-              <h2 style={styles.text}>{society.name}</h2>
+              <h2 style={styles.text}>{faculty.name}</h2>
             </div>
           </Link>
         ))}
@@ -52,7 +51,7 @@ const styles = {
     textAlign: "center",
     padding: "20px",
     width: "100%",
-    backgroundColor: "rgba(167, 97, 117, 0.8)", // Background with transparency
+    backgroundColor: "rgba(132, 4, 50, 0.5)", // Background with transparency
     backgroundImage: `url(${backgroundImage})`, // Use the imported image
     backgroundSize: "cover",
     backgroundPosition: "center",
@@ -78,7 +77,7 @@ const styles = {
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", // Adjusted to auto-fill with a minimum size for each card
+    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", // Adjust card size
     gap: "15px", // Smaller gap between the cards
     maxWidth: "100%",
     padding: "10px",
@@ -98,11 +97,11 @@ const styles = {
   },
   text: {
     color: "white",
-    fontSize: "30px", // Adjusted font size for better readability
+    fontSize: "30px", // Adjusted font size
     textAlign: "center",
     fontWeight: "bold",
     fontFamily: "New Century Schoolbook, TeX Gyre Schola, serif",
   },
 };
 
-export default SocietiesList;
+export default Faculties;

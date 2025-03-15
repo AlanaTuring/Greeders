@@ -1,8 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
-import Societies from "./pages/SocietiesTemp";
-import Faculties from "./pages/Faculties";
+import Societies from "./pages/Societies/Societies";
+import SocietiesPage from "./pages/Societies/societiesPage"; 
+import Faculties from "./pages/Faculties/Faculties";
+import FacultiesPage from "./pages/Faculties/FacultiesPage"; 
 import Clubs from "./pages/Clubs/Clubs";
 import ClubPage from "./pages/Clubs/ClubPage"; 
 import Profile from "./pages/Profile";
@@ -24,7 +26,9 @@ function App() {
           <Route path="/clubs" element={<Clubs />} />
           <Route path="/clubs/:id" element={<ClubPage />} />
           <Route path="/societies" element={<Societies />} />
+          <Route path="/societies/:id" element={<SocietiesPage />} />
           <Route path="/faculties" element={<Faculties />} />
+          <Route path="/faculties/:id" element={<FacultiesPage />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
