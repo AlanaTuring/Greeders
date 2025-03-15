@@ -6,19 +6,22 @@ const societySchema = new mongoose.Schema({
   description: { type: String, required: true },
   location: { type: String },
   contact: { type: String },
-  // This will store the list of events related to the society
+
+  // Array of references to Event documents
   events: [
     {
-      event_name: { type: String, required: true },
-      event_date: { type: Date, required: true },
-      event_description: { type: String, required: true },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "event", // Refers to the Event model
+      required: true,
     },
   ],
-  // This will store organizers of the society (optional)
+
+  // Array of references to Organizer documents
   organizers: [
     {
-      name: { type: String, required: true },
-      role: { type: String, required: true },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "organizer", // Refers to the Organizer model
+      required: true,
     },
   ],
 });

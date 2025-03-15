@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const clubSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -6,24 +6,25 @@ const clubSchema = new mongoose.Schema({
   description: { type: String, required: true },
   location: { type: String },
   contact: { type: String },
-  // This will store the list of events related to the club
+  
+  // Reference existing Event documents
   events: [
     {
-      event_name: { type: String, required: true },
-      event_date: { type: Date, required: true },
-      event_description: { type: String, required: true },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Event", // Reference to Event model
     },
   ],
-  // This will store organizers of the club (optional)
+
+  // Reference existing Organizer documents
   organizers: [
     {
-      name: { type: String, required: true },
-      role: { type: String, required: true },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organizer", // Reference to Organizer model
     },
   ],
 });
 
 // Create the Club model
-const Club = mongoose.model('Club', clubSchema);
+const Club = mongoose.model("Club", clubSchema);
 
 module.exports = Club;

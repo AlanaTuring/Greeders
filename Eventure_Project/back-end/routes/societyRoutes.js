@@ -1,9 +1,11 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const Society = require("../models/Society");
+const Society = require('../models/Society');
+const Event = require('../models/Event');
+const Organizer = require('../models/Organizer');
 
-// Create a society
-router.post("/", async (req, res) => {
+// Create a new society
+router.post('/', async (req, res) => {
   try {
     const society = new Society(req.body);
     const savedSociety = await society.save();
@@ -14,7 +16,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all societies
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const societies = await Society.find();
     res.status(200).json(societies);
@@ -23,34 +25,63 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Get a specific society with populated events
-router.get("/:id", async (req, res) => {
+// Get a specific society with populated events and organizers
+router.get('/:id', async (req, res) => {
   try {
-    const society = await Society.findById(req.params.id).populate("events");
-    if (!society) {
-      return res.status(404).json({ message: "Society not found" });
-    }
+    const society = await Society.findById(req.params.id)
+      .populate('events')
+      .populate('organizers');
+
+    if (!society) return res.status(404).json({ message: 'Society not found' });
+
     res.status(200).json(society);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Add an event to a society
-router.post("/:id/events", async (req, res) => {
+// Add an existing event to a society
+router.post('/:id/add-event', async (req, res) => {
   try {
+    const { eventId } = req.body;
     const society = await Society.findById(req.params.id);
-    if (!society) {
-      return res.status(404).json({ message: "Society not found" });
+
+    if (!society) return res.status(404).json({ message: 'Society not found' });
+
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    // Avoid adding duplicate events
+    if (society.events.includes(eventId)) {
+      return res.status(400).json({ message: 'Event already added to this society' });
     }
 
-    // Assuming you are passing an event object in the request body
-    const newEvent = req.body;
+    society.events.push(eventId);
+    await society.save();
 
-    // Add the event to the society's events array
-    society.events.push(newEvent);
+    res.status(201).json(society);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    // Save the updated society document
+// Add an existing organizer to a society
+router.post('/:id/add-organizer', async (req, res) => {
+  try {
+    const { organizerId } = req.body;
+    const society = await Society.findById(req.params.id);
+
+    if (!society) return res.status(404).json({ message: 'Society not found' });
+
+    const organizer = await Organizer.findById(organizerId);
+    if (!organizer) return res.status(404).json({ message: 'Organizer not found' });
+
+    // Avoid adding duplicate organizers
+    if (society.organizers.includes(organizerId)) {
+      return res.status(400).json({ message: 'Organizer already added to this society' });
+    }
+
+    society.organizers.push(organizerId);
     await society.save();
 
     res.status(201).json(society);
@@ -60,26 +91,12 @@ router.post("/:id/events", async (req, res) => {
 });
 
 // Update a specific society
-router.put("/:id", async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const updatedSociety = await Society.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedSociety) {
-      return res.status(404).json({ message: "Society not found" });
-    }
-    res.status(200).json(updatedSociety);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    if (!updatedSociety) return res.status(404).json({ message: 'Society not found' });
 
-// Delete a specific society
-router.delete("/:id", async (req, res) => {
-  try {
-    const deletedSociety = await Society.findByIdAndDelete(req.params.id);
-    if (!deletedSociety) {
-      return res.status(404).json({ message: "Society not found" });
-    }
-    res.status(200).json({ message: "Society deleted successfully" });
+    res.status(200).json(updatedSociety);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
