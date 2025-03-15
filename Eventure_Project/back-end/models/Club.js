@@ -4,7 +4,6 @@ const clubSchema = new mongoose.Schema({
   name: { type: String, required: true },
   logo: { type: String, required: true },
   description: { type: String, required: true },
-  location: { type: String },
   contact: { type: String },
   
   // Reference existing Event documents
