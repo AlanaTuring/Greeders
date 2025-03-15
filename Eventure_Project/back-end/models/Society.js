@@ -4,7 +4,6 @@ const societySchema = new mongoose.Schema({
   name: { type: String, required: true },
   logo: { type: String, required: true },
   description: { type: String, required: true },
-  location: { type: String },
   contact: { type: String },
 
   // Array of references to Event documents
