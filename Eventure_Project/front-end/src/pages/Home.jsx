@@ -7,6 +7,8 @@ const categories = [
   { name: "Clubs", color: "#bc7c8c", link: "/clubs" },
   { name: "Societies", color: "#bc7c8c", link: "/societies" },
   { name: "Faculties", color: "#bc7c8c", link: "/faculties" },
+  // Add SocietiesTemp link if you want to have a separate link for it
+  { name: "Societies Temp", color: "#bc7c8c", link: "/societies/temp" },
 ];
 
 const Home = () => {
