@@ -20,6 +20,7 @@ const facultySchema = new mongoose.Schema({
       required: true,
     },
   ],
+  logo: {type: String, required: true},
 });
 
 // Export the Faculty model based on the schema
