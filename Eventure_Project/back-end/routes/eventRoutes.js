@@ -1,32 +1,60 @@
 const express = require("express");
-const router = express.Router();
 const Event = require("../models/Event");
-const Club = require("../models/Club");  // Import Club model if needed for validation
+const router = express.Router();
 
-// Create an event
-router.post("/", async (req, res) => {
+// Get all events for a specific club
+router.get("/:clubId/events", async (req, res) => {
   try {
-    const { club, title, date, location, form } = req.body;
-
-    // Check if the club exists
-    const foundClub = await Club.findById(club);
-    if (!foundClub) {
-      return res.status(404).json({ error: "Club not found" });
-    }
-
-    const event = new Event({ club, title, date, location, form });
-    const savedEvent = await event.save();
-    res.status(201).json(savedEvent);
+    // Fetch events for the specific club
+    const events = await Event.find({ club: req.params.clubId }).populate("club");
+    res.status(200).json(events); // Return events related to the club
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Get all events
-router.get("/", async (req, res) => {
+// Create a new event (if needed in the future)
+router.post("/", async (req, res) => {
   try {
-    const events = await Event.find().populate('club');  // Populate club data in the events
-    res.status(200).json(events);
+    const { title, description, club } = req.body;
+    const newEvent = new Event({
+      title,
+      description,
+      club, // The event should be associated with a club
+    });
+    await newEvent.save();
+    res.status(201).json(newEvent);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Delete an event
+router.delete("/:id", async (req, res) => {
+  try {
+    const event = await Event.findByIdAndDelete(req.params.id); // Find the event by its ID and delete it
+    if (!event) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+    res.status(200).json({ message: "Event deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update an event (if needed in the future)
+router.put("/:id", async (req, res) => {
+  try {
+    const { title, description, club } = req.body;
+    const updatedEvent = await Event.findByIdAndUpdate(
+      req.params.id,
+      { title, description, club },
+      { new: true }
+    );
+    if (!updatedEvent) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+    res.status(200).json(updatedEvent);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

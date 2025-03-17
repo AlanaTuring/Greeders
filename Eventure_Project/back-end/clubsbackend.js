@@ -1,22 +1,7 @@
-// Import required modules
+// clubsbackend.js
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
-
-// Initialize Express app
-const app = express();
-
-// Middleware
-app.use(express.json()); // Parse JSON requests
-app.use(cors()); // Enable CORS
-
-// MongoDB Connection
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/eventure";
-mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log(" Connected to MongoDB"))
-  .catch((err) => console.error(" MongoDB Connection Error:", err));
+const router = express.Router(); // Use the Router object to define routes
 
 // Club Schema
 const clubSchema = new mongoose.Schema({
@@ -44,9 +29,8 @@ const clubSchema = new mongoose.Schema({
 
 const Club = mongoose.model("Club", clubSchema);
 
-// Routes
-
-app.get("/api/clubs", async (req, res) => {
+// GET all clubs with optional filters and sorting
+router.get("/", async (req, res) => {
   try {
     const { name, sortBy } = req.query;
     let query = {};
@@ -64,7 +48,8 @@ app.get("/api/clubs", async (req, res) => {
   }
 });
 
-app.get("/api/clubs/:id", async (req, res) => {
+// GET single club by ID
+router.get("/:id", async (req, res) => {
   try {
     const club = await Club.findById(req.params.id)
       .populate("events")
@@ -76,7 +61,8 @@ app.get("/api/clubs/:id", async (req, res) => {
   }
 });
 
-app.post("/api/clubs", async (req, res) => {
+// POST a new club
+router.post("/", async (req, res) => {
   try {
     const existingClub = await Club.findOne({
       $or: [{ name: req.body.name }, { contact: req.body.contact }],
@@ -95,7 +81,8 @@ app.post("/api/clubs", async (req, res) => {
   }
 });
 
-app.put("/api/clubs/:id", async (req, res) => {
+// PUT (update) an existing club
+router.put("/:id", async (req, res) => {
   try {
     const existingClub = await Club.findOne({
       $or: [{ name: req.body.name }, { contact: req.body.contact }],
@@ -119,7 +106,8 @@ app.put("/api/clubs/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/clubs/:id", async (req, res) => {
+// DELETE a club
+router.delete("/:id", async (req, res) => {
   try {
     const deletedClub = await Club.findByIdAndDelete(req.params.id);
     if (!deletedClub) return res.status(404).json({ message: "Club not found" });
@@ -129,7 +117,8 @@ app.delete("/api/clubs/:id", async (req, res) => {
   }
 });
 
-app.post("/api/clubs/:id/events", async (req, res) => {
+// POST to add an event to a club
+router.post("/:id/events", async (req, res) => {
   try {
     const { eventId } = req.body;
     const club = await Club.findById(req.params.id);
@@ -148,8 +137,8 @@ app.post("/api/clubs/:id/events", async (req, res) => {
   }
 });
 
-// 📍 Add an organizer to a club
-app.post("/api/clubs/:id/organizers", async (req, res) => {
+// POST to add an organizer to a club
+router.post("/:id/organizers", async (req, res) => {
   try {
     const { organizerId } = req.body;
     const club = await Club.findById(req.params.id);
@@ -170,6 +159,4 @@ app.post("/api/clubs/:id/organizers", async (req, res) => {
   }
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
+module.exports = router;
