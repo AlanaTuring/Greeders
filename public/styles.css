@@ -1,0 +1,160 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background: url('GreenOval.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Change this to flex-start to allow scrolling */
+    height: 100vh;
+    overflow: auto; /* Allow scrolling */
+    margin: 0;
+    padding: 20px; /* Add some padding */
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 40px;  /* Increased padding for more square-like appearance */
+    border-radius: 10px;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    opacity: 1;
+    margin-top: 50px; /* Add margin to prevent logo from being hidden */
+}
+
+.logo img {
+    width: 150px;
+}
+
+h1 {
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+p {
+    margin-bottom: 20px;
+}
+
+.image-container img {
+    width: 100%; /* Ensure the images fit within the container */
+    margin: 20px 0;
+    border-radius: 5px;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+form {
+    display: block; /* Ensure the form is visible */
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+label {
+    margin-right: 10px;
+    flex-basis: 30%;
+    text-align: left;
+}
+
+input {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    flex-basis: 70%;
+}
+
+.btn {
+    padding: 10px;
+    background-color: #480f0f;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    width: 100%; /* Ensure button width matches input fields */
+    margin: 10px 0; /* Add margin to separate from input fields */
+}
+
+/* Hover effect for button */
+.btn:hover {
+    background-color: #ffcccc;
+    color: #480f0f; /* Light red text on hover */
+}
+
+.additional-options {
+    margin-top: 10px;
+}
+
+.additional-options p {
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+a {
+    color: #eb3f0a;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #ffcccc;
+    text-decoration: underline;
+}
+
+input[type="text"], input[type="number"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    box-sizing: border-box;
+}
+
+.forgot-password {
+    margin-top: 10px;
+}
+
+.forgot-password a {
+    color: #e0e3e0;
+    text-decoration: none;
+    font-style: italic; /* Make the text italic */
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
+
+.auth-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.auth-options p {
+    margin: 0;
+}
+
+.auth-options .btn {
+    margin-top: 5px;
+}
+
+.profile-picture {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
