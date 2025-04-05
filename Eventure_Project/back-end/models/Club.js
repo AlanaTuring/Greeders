@@ -6,7 +6,7 @@ const clubSchema = new mongoose.Schema({
   description: { type: String, required: true },
   contact: { type: String },
   
-  // Reference existing Event documents
+  // Reference existing Event documents (using ObjectId)
   events: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -14,7 +14,7 @@ const clubSchema = new mongoose.Schema({
     },
   ],
 
-  // Reference existing Organizer documents
+  // Reference existing Organizer documents (using ObjectId)
   organizers: [
     {
       type: mongoose.Schema.Types.ObjectId,

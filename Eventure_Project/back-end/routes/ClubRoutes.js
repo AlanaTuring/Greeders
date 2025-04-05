@@ -12,7 +12,9 @@ router.get("/", async (req, res) => {
     if (name) query.name = new RegExp(name, "i"); // Case-insensitive name filter
     if (location) query.location = new RegExp(location, "i"); // Location filter
 
-    let clubs = Club.find(query).populate("events").populate("organizers");
+    let clubs = Club.find(query)
+      .populate("events") // Populate events
+      .populate("organizers"); // Populate organizers
 
     // Sorting logic (e.g., ?sortBy=name or ?sortBy=location)
     if (sortBy) clubs = clubs.sort({ [sortBy]: 1 });
@@ -24,14 +26,15 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Get a specific club with populated references
+// Get a specific club with populated references (events and organizers)
 router.get("/:id", async (req, res) => {
   try {
     const club = await Club.findById(req.params.id)
-      .populate("events")
-      .populate("organizers");
+      .populate("events") // Populate events
+      .populate("organizers"); // Populate organizers
+
     if (!club) return res.status(404).json({ message: "Club not found" });
-    res.status(200).json(club);
+    res.status(200).json(club);  // Send the club data (including populated events)
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -71,7 +74,12 @@ router.post("/:id/events", async (req, res) => {
     club.events.push(eventId);
     await club.save();
 
-    res.status(201).json(club);
+    // Populate events and organizers after adding the new event
+    const updatedClub = await Club.findById(req.params.id)
+      .populate("events")
+      .populate("organizers");
+
+    res.status(201).json(updatedClub);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -93,7 +101,12 @@ router.post("/:id/organizers", async (req, res) => {
     club.organizers.push(organizerId);
     await club.save();
 
-    res.status(201).json(club);
+    // Populate events and organizers after adding the new organizer
+    const updatedClub = await Club.findById(req.params.id)
+      .populate("events")
+      .populate("organizers");
+
+    res.status(201).json(updatedClub);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -118,7 +131,13 @@ router.put("/:id", async (req, res) => {
       { new: true }
     );
     if (!updatedClub) return res.status(404).json({ message: "Club not found" });
-    res.status(200).json(updatedClub);
+
+    // Populate events and organizers after updating the club
+    const populatedClub = await Club.findById(req.params.id)
+      .populate("events")
+      .populate("organizers");
+
+    res.status(200).json(populatedClub);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

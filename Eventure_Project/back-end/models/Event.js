@@ -31,4 +31,7 @@ const eventSchema = new mongoose.Schema({
   },
 });
 
+// Add an index to the club field for efficient querying
+eventSchema.index({ club: 1 });
+
 module.exports = mongoose.model("Event", eventSchema);
