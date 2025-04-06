@@ -33,6 +33,30 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
+  const handleDelete = async (eventId) => {
+    const token = localStorage.getItem("userToken");
+    try {
+      const res = await fetch(`http://localhost:5001/api/bookmarks/${eventId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        // Update UI by removing the deleted event
+        setEvents((prevEvents) =>
+          prevEvents.filter((event) => event._id !== eventId)
+        );
+      } else {
+        console.error("Failed to delete event:", data.message);
+      }
+    } catch (err) {
+      console.error("Error deleting event:", err);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.overlay}></div>
@@ -54,6 +78,13 @@ const Profile = () => {
               {event.description}
               <br />
               🕒 {formatDate(event.date)} | 📍 {event.location}
+              <br />
+              <button
+                style={styles.deleteButton}
+                onClick={() => handleDelete(event._id)}
+              >
+                ❌ Remove
+              </button>
             </li>
           ))
         ) : (
@@ -134,6 +165,15 @@ const styles = {
     fontSize: "18px",
     color: "white",
     lineHeight: "1.6",
+  },
+  deleteButton: {
+    marginTop: "10px",
+    padding: "6px 12px",
+    backgroundColor: "#ff4d4f",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
 };
 

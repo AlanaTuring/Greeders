@@ -21,7 +21,6 @@ router.post('/', authenticateToken, async (req, res) => {
     if (existing) {
       return res.status(409).json({ message: 'Event already bookmarked' });
     }
-
     // Create new bookmark document
     const newBookmark = new Bookmark({ studentId, eventId });
     await newBookmark.save();
@@ -42,5 +41,30 @@ router.post('/', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+router.delete('/:eventId', authenticateToken, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const studentId = req.user.id;
+
+    // Delete the bookmark
+    await Bookmark.findOneAndDelete({ studentId, eventId });
+
+    // Remove the event from the student's favorites
+    const student = await Student.findById(studentId);
+    if (student) {
+      student.favorites = student.favorites.filter(id => id.toString() !== eventId);
+      await student.save();
+    }
+
+    res.status(200).json({ message: 'Event removed from bookmarks and favorites' });
+  } catch (error) {
+    console.error('Error removing bookmark:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 
 module.exports = router;
