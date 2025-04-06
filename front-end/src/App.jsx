@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
-import { UserProvider, UserContext } from "./context/userContext"; // Ensure correct path
+import { UserProvider, UserContext } from "./context/userContext";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword"; // Import ResetPassword
+import ResetPassword from "./pages/ResetPassword";
 import Societies from "./pages/Societies/Societies";
 import SocietiesPage from "./pages/Societies/societiesPage";
 import Faculties from "./pages/Faculties/Faculties";
@@ -16,14 +16,34 @@ import Profile from "./pages/Profile";
 import Organizer from "./pages/Organizer";
 
 function App() {
-  const { isLoggedIn, logout } = useContext(UserContext); // Access UserContext
+  const { isLoggedIn, logout } = useContext(UserContext);
 
   return (
     <Router>
       <div>
-        <nav style={styles.navbar}>
+        {/* Injecting slide-in animation styles */}
+        <style>
+          {`
+            @keyframes slideIn {
+              from {
+                transform: translateX(-100%);
+                opacity: 0;
+              }
+              to {
+                transform: translateX(0);
+                opacity: 1;
+              }
+            }
+
+            .animated-navbar {
+              animation: slideIn 1.5s ease-out forwards;
+              opacity: 0;
+            }
+          `}
+        </style>
+
+        <nav style={styles.navbar} className="animated-navbar">
           <Link to="/" style={styles.navLink}>Home</Link>
-          {/* Only show Clubs, Societies, and Faculties links if the user is logged in */}
           {isLoggedIn && (
             <>
               <Link to="/clubs" style={styles.navLink}>Clubs</Link>
@@ -31,45 +51,36 @@ function App() {
               <Link to="/faculties" style={styles.navLink}>Faculties</Link>
             </>
           )}
-
-          {/* Show links based on login status */}
-          {isLoggedIn && (
+          {isLoggedIn ? (
             <>
               <Link to="/profile" style={styles.navLink}>Profile</Link>
               <Link to="/organizer" style={styles.navLink}>Organizer</Link>
               <button onClick={logout} style={styles.navLink}>Logout</button>
             </>
-          )}
-
-          {!isLoggedIn && (
+          ) : (
             <>
               <Link to="/login" style={styles.navLink}>Login</Link>
               <Link to="/signup" style={styles.navLink}>Signup</Link>
             </>
           )}
+
+          
         </nav>
 
         <Routes>
-          {/* Protect the Home page as well */}
           <Route path="/" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
-          
-          {/* Add isLoggedIn check for Clubs, Societies, and Faculties */}
           <Route path="/clubs" element={isLoggedIn ? <Clubs /> : <Navigate to="/login" />} />
           <Route path="/clubs/:clubId" element={isLoggedIn ? <ClubPage /> : <Navigate to="/login" />} />
           <Route path="/societies" element={isLoggedIn ? <Societies /> : <Navigate to="/login" />} />
           <Route path="/societies/:id" element={isLoggedIn ? <SocietiesPage /> : <Navigate to="/login" />} />
           <Route path="/faculties" element={isLoggedIn ? <Faculties /> : <Navigate to="/login" />} />
           <Route path="/faculties/:id" element={isLoggedIn ? <FacultiesPage /> : <Navigate to="/login" />} />
-          
-          {/* Protected routes */}
           <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/organizer" element={isLoggedIn ? <Organizer /> : <Navigate to="/login" />} />
-
-          {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} /> {/* Forgot Password Route */}
-          <Route path="/reset-password/:userId" element={<ResetPassword />} /> {/* Reset Password Route */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:userId" element={<ResetPassword />} />
         </Routes>
       </div>
     </Router>
@@ -78,18 +89,23 @@ function App() {
 
 const styles = {
   navbar: {
+    position: "absolute", // Put it on top
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10, // Stay above the video
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#923152",
+    backgroundColor: "rgba(0, 0, 0, 0.2)", // Transparent background
     padding: "15px 0",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     fontFamily: "Arial, sans-serif",
   },
+  
   navLink: {
     textDecoration: "none",
-    color: "white",
-    fontSize: "18px",
+    color: "#ffffff",
+    fontSize: "21px",
     fontWeight: "bold",
     padding: "10px 20px",
     margin: "0 15px",

@@ -59,19 +59,19 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 
 // Serve static files
-app.use(express.static(path.join(__dirname, '../front-end/public')));
+// app.use(express.static(path.join(__dirname, '../front-end/public')));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../front-end/public/index.html'));
-});
+// app.get('/', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../front-end/public/index.html'));
+// });
 
-app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, '../front-end/public/signup.html'));
-});
+// app.get('/signup', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../front-end/public/signup.html'));
+// });
 
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '../front-end/public/login.html'));
-});
+// app.get('/login', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../front-end/public/login.html'));
+// });
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
