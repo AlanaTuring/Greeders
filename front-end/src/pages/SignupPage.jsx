@@ -1,37 +1,36 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './styles.css'; // adjust path if needed
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./styles.css";
 
 const SignupPage = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'student' });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "student" });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register', {
-
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("http://localhost:5001/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const result = await response.json();
-      console.log(result);  // Log the result to see if we have any specific error message
+      console.log(result); // Log the result to see if we have any specific error message
 
       if (response.ok) {
         alert(result.msg);
-        navigate('/login');  // Navigate to the login page on successful registration
+        navigate("/login"); // Navigate to login after successful registration
       } else {
-        alert(result.msg || 'Something went wrong. Please try again.');
+        alert(result.msg || "Something went wrong. Please try again.");
       }
     } catch (error) {
-      console.error('Signup error:', error);  // Log error in the console
-      alert('An error occurred. Please try again.');
+      console.error("Signup error:", error); // Log error in the console
+      alert("An error occurred. Please try again.");
     }
   };
 

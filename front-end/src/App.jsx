@@ -1,80 +1,151 @@
-import React, { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
-import { UserProvider, UserContext } from "./context/userContext"; // Ensure correct path
+import React, { useState, useEffect, useContext } from "react";
+import { Routes, Route, Link, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { UserContext } from "./context/userContext";
+
+// Page imports
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword"; // Import ResetPassword
+import ResetPassword from "./pages/ResetPassword";
 import Societies from "./pages/Societies/Societies";
 import SocietiesPage from "./pages/Societies/societiesPage";
 import Faculties from "./pages/Faculties/Faculties";
 import FacultiesPage from "./pages/Faculties/FacultiesPage";
 import Clubs from "./pages/Clubs/Clubs";
-import ClubPage from "./pages/Clubs/ClubPage";
+import ClubPage from "./pages/Clubs/ClubPage";  // Make sure ClubPage is imported
 import Profile from "./pages/Profile";
-import Organizer from "./pages/Organizer";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
+import AddEventForm from "./pages/AddEventForm";
+import EditEvent from "./pages/EditEvent";
+import RoleSelection from "./pages/RoleSelection";
 
-function App() {
-  const { isLoggedIn, logout } = useContext(UserContext); // Access UserContext
+const App = () => {
+  const { isLoggedIn, logout } = useContext(UserContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [clubData, setClubData] = useState(null);
+  const [events, setEvents] = useState([]);
+
+  // Use the email from localStorage to fetch the organizer data
+  const userEmail = localStorage.getItem("userEmail");
+
+  useEffect(() => {
+    const savedRole = localStorage.getItem("role");
+    if (savedRole) {
+      setRole(savedRole);
+    }
+    setLoading(false);
+  }, []);
+
+  // Function to fetch organizer data using the stored email
+  const fetchOrganizerData = async (email) => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(`http://localhost:5001/api/organizer/${email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setClubData(data.club);
+        setEvents(data.events);
+      } else {
+        console.error("Error fetching organizer data", data);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
+  // Handle role selection for organizer
+  const handleSelectRole = (selectedRole) => {
+    setRole(selectedRole);
+    localStorage.setItem("role", selectedRole);
+    if (selectedRole === "organizer" && userEmail) {
+      fetchOrganizerData(userEmail); // Fetch organizer data after role selection
+      navigate("/organizer");
+    } else {
+      navigate("/home");
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    localStorage.removeItem("role");
+    localStorage.removeItem("userEmail");
+    setRole(null);
+    setClubData(null);
+    setLoading(false);
+    navigate("/login");
+  };
+
+  // Define the function to add a new event
+  const handleAddEvent = (newEvent) => {
+    setEvents((prevEvents) => [...prevEvents, newEvent]);
+  };
+
+  const showNavbar = isLoggedIn && location.pathname !== "/role-selection";
 
   return (
-    <Router>
-      <div>
+    <div>
+      {showNavbar && (
         <nav style={styles.navbar}>
-          <Link to="/" style={styles.navLink}>Home</Link>
-          {/* Only show Clubs, Societies, and Faculties links if the user is logged in */}
-          {isLoggedIn && (
+          {role === "student" && (
             <>
-              <Link to="/clubs" style={styles.navLink}>Clubs</Link>
-              <Link to="/societies" style={styles.navLink}>Societies</Link>
-              <Link to="/faculties" style={styles.navLink}>Faculties</Link>
-            </>
-          )}
-
-          {/* Show links based on login status */}
-          {isLoggedIn && (
-            <>
+              <Link to="/home" style={styles.navLink}>Home</Link>
               <Link to="/profile" style={styles.navLink}>Profile</Link>
-              <Link to="/organizer" style={styles.navLink}>Organizer</Link>
-              <button onClick={logout} style={styles.navLink}>Logout</button>
+              <button onClick={handleLogout} style={styles.navLink}>Logout</button>
             </>
           )}
-
-          {!isLoggedIn && (
+          {role === "organizer" && (
             <>
-              <Link to="/login" style={styles.navLink}>Login</Link>
-              <Link to="/signup" style={styles.navLink}>Signup</Link>
+              <Link to="/organizer" style={styles.navLink}>Organizer Dashboard</Link>
+              <button onClick={handleLogout} style={styles.navLink}>Logout</button>
             </>
           )}
         </nav>
+      )}
 
-        <Routes>
-          {/* Protect the Home page as well */}
-          <Route path="/" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
-          
-          {/* Add isLoggedIn check for Clubs, Societies, and Faculties */}
-          <Route path="/clubs" element={isLoggedIn ? <Clubs /> : <Navigate to="/login" />} />
-          <Route path="/clubs/:clubId" element={isLoggedIn ? <ClubPage /> : <Navigate to="/login" />} />
-          <Route path="/societies" element={isLoggedIn ? <Societies /> : <Navigate to="/login" />} />
-          <Route path="/societies/:id" element={isLoggedIn ? <SocietiesPage /> : <Navigate to="/login" />} />
-          <Route path="/faculties" element={isLoggedIn ? <Faculties /> : <Navigate to="/login" />} />
-          <Route path="/faculties/:id" element={isLoggedIn ? <FacultiesPage /> : <Navigate to="/login" />} />
-          
-          {/* Protected routes */}
-          <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
-          <Route path="/organizer" element={isLoggedIn ? <Organizer /> : <Navigate to="/login" />} />
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:userId" element={<ResetPassword />} />
+        <Route path="/role-selection" element={isLoggedIn ? <RoleSelection onSelectRole={handleSelectRole} /> : <Navigate to="/login" />} />
+        <Route path="/home" element={isLoggedIn && role === "student" ? <Home /> : <Navigate to="/role-selection" />} />
+        <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/organizer" element={isLoggedIn && role === "organizer" ? (
+          loading ? <div>Loading...</div> : <OrganizerDashboard clubData={clubData} events={events} />
+        ) : (
+          <Navigate to="/role-selection" />
+        )} />
+        <Route path="/add-event" element={isLoggedIn ? <AddEventForm onAddEvent={handleAddEvent} /> : <Navigate to="/login" />} />
+        <Route path="/edit-event/:eventId" element={isLoggedIn ? <EditEvent /> : <Navigate to="/login" />} />
 
-          {/* Public routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} /> {/* Forgot Password Route */}
-          <Route path="/reset-password/:userId" element={<ResetPassword />} /> {/* Reset Password Route */}
-        </Routes>
-      </div>
-    </Router>
+        {/* Add dynamic route for Club page */}
+        <Route path="/clubs/:clubId" element={<ClubPage />} />
+        
+        {/* Other Routes */}
+        <Route path="/clubs" element={<Clubs />} />
+        <Route path="/societies" element={<Societies />} />
+        <Route path="/faculties" element={<Faculties />} />
+      </Routes>
+    </div>
   );
-}
+};
 
 const styles = {
   navbar: {
@@ -83,8 +154,7 @@ const styles = {
     alignItems: "center",
     backgroundColor: "#923152",
     padding: "15px 0",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    fontFamily: "Arial, sans-serif",
+    flexWrap: "wrap",
   },
   navLink: {
     textDecoration: "none",
@@ -92,9 +162,12 @@ const styles = {
     fontSize: "18px",
     fontWeight: "bold",
     padding: "10px 20px",
-    margin: "0 15px",
+    margin: "5px 10px",
     borderRadius: "5px",
     transition: "all 0.3s ease-in-out",
+    backgroundColor: "#923152",
+    border: "none",
+    cursor: "pointer",
   },
 };
 

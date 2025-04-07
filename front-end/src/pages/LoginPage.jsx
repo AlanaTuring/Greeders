@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../context/userContext';
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/userContext";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { login } = useContext(UserContext);
 
@@ -12,38 +12,36 @@ const LoginPage = () => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert('Email and password are required!');
+      alert("Email and password are required!");
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include', // required for cookies
+        credentials: "include",
       });
 
       const data = await response.json();
 
       if (response.ok) {
         const token = data?.token;
-
         if (token) {
-          localStorage.setItem("userToken", token); // Save token if returned
-          console.log("Token saved:", token);
+          localStorage.setItem("userToken", token);
+          localStorage.setItem("userEmail", email); // Save the email
         }
-
-        login(token || true); // Update login state (true if token not provided)
-        navigate('/'); // Redirect to home
+        login(token);
+        navigate("/role-selection");
       } else {
-        alert(data.message || 'Invalid credentials');
+        alert(data.message || "Invalid credentials");
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred, please try again.');
+      console.error("Error:", error);
+      alert("An error occurred, please try again.");
     }
   };
 

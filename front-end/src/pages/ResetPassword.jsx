@@ -25,7 +25,7 @@ const ResetPassword = () => {
       const result = await response.json();
       alert(result.msg);
       if (result.msg === "Password reset successful") {
-        navigate("/login");  // Redirect to login page after successful reset
+        navigate("/login"); // Redirect to login page after successful reset
       }
     } catch (error) {
       console.error("Error:", error);
