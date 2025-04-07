@@ -1,10 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken'); // For generating JWT tokens
+const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const cors = require('cors');
 
 const Student = require('../models/Student'); // Import the Student model
+const Organizer = require('../models/Organizer'); // Import the Organizer model
 const router = express.Router();
 
 // Enable CORS with credentials
@@ -55,37 +56,76 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find student by email
-    const student = await Student.findOne({ email });
-    if (!student) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    // Check if the email belongs to a student
+    let student = await Student.findOne({ email });
+
+    if (student) {
+      // Student Login Logic
+      const isMatch = await bcrypt.compare(password, student.password);
+      if (!isMatch) {
+        return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      }
+
+      // Create JWT token for student
+      const token = jwt.sign(
+        { id: student._id, email: student.email, role: student.role },
+        process.env.JWT_SECRET || 'supersecretjwtkey',
+        { expiresIn: '1d' }
+      );
+
+      return res.json({
+        success: true,
+        message: 'Login successful',
+        token,
+      });
     }
 
-    // Compare the input password with the stored hash
-    const isMatch = await bcrypt.compare(password, student.password);
-    if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    // Check if the email belongs to an organizer
+    let organizer = await Organizer.findOne({ email });
+
+    if (organizer) {
+      // Organizer Login Logic
+      const isMatch = await bcrypt.compare(password, organizer.password);
+      if (!isMatch) {
+        return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      }
+
+      // Create JWT token for organizer
+      const token = jwt.sign(
+        { id: organizer._id, email: organizer.email, role: organizer.role },
+        process.env.JWT_SECRET || 'supersecretjwtkey',
+        { expiresIn: '1d' }
+      );
+
+      return res.json({
+        success: true,
+        message: 'Login successful',
+        token,
+      });
     }
 
-    // Save student to session
-    req.session.student = student;
-
-    // Create JWT token
-    const token = jwt.sign(
-      { id: student._id, email: student.email, role: student.role },
-      process.env.JWT_SECRET || 'supersecretjwtkey',
-      { expiresIn: '1d' }
-    );
-
-    // Send token and success message
-    res.json({
-      success: true,
-      message: 'Login successful',
-      token, // <-- frontend will store this
-    });
+    return res.status(401).json({ success: false, message: 'Invalid credentials' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Fetch Organizer by Email
+router.get('/organizer/:email', async (req, res) => {
+  const email = req.params.email;
+
+  try {
+    const organizer = await Organizer.findOne({ email });
+
+    if (!organizer) {
+      return res.status(404).json({ message: 'Organizer not found' });
+    }
+
+    res.json(organizer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

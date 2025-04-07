@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
     const student = await Student.findById(decoded.id).populate("favorites");
     if (!student) return res.status(404).json({ message: "User not found" });
 
-    // Return student name and events with _id included
+    // Return student name and events
     res.json({
       name: student.name,
       events: student.favorites.map(event => ({

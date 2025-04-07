@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import "./styles.css"; // Make sure this path matches your file structure
+import { useNavigate } from "react-router-dom";
+import "./styles.css"; // Ensure this path matches your file structure
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
@@ -18,6 +20,7 @@ const ForgotPassword = () => {
 
       const result = await response.json();
       alert(result.msg || "Reset link sent!");
+      navigate('/'); // Redirect after sending reset link
     } catch (error) {
       console.error("Error sending reset link:", error);
       alert("Something went wrong. Please try again.");
@@ -25,25 +28,105 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="container">
-      <div className="logo">
-        <img src="/aub-logo.png" alt="Logo name" />
+    <div style={styles.background}>
+      <div style={styles.overlay}>
+        <h1 style={styles.heading}>Forgot Password</h1>
+        <form onSubmit={handleForgotPassword} style={styles.form}>
+          <div style={styles.inputContainer}>
+            <label htmlFor="email" style={styles.label}>Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              style={styles.input}
+              required
+            />
+          </div>
+
+          <button type="submit" style={styles.button}>Send Reset Link</button>
+        </form>
+
+        <p style={styles.footer}>
+          <a href="/login">Back to Login</a>
+        </p>
       </div>
-      <h1>Forgot Password</h1>
-      <p>Enter your email to reset your password.</p>
-      <form onSubmit={handleForgotPassword}>
-        <input
-          type="text"
-          name="email"
-          placeholder="Email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <button type="submit" className="btn">Send Reset Link</button>
-      </form>
     </div>
   );
+};
+
+const styles = {
+  background: {
+    backgroundImage: 'url(/aubtower.png)',
+    backgroundSize: '130%',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    height: '100vh',
+    width: '100vw',
+    display: 'flex',
+  },
+  overlay: {
+    width: '50%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    boxSizing: 'border-box',
+    padding: '40px',
+  },
+  heading: {
+    fontSize: '36px',
+    marginBottom: '30px',
+    color: '#fff',
+    fontFamily: "Monaco, monospace",
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    maxWidth: '400px',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: '40px',
+    borderRadius: '12px',
+    boxShadow: '0 6px 18px rgba(0, 0, 0, 0.3)',
+    color: '#333',
+    boxSizing: 'border-box',
+  },
+  inputContainer: {
+    marginBottom: '20px',
+  },
+  label: {
+    fontSize: '16px',
+    marginBottom: '8px',
+    color: '#333',
+    display: 'block',
+  },
+  input: {
+    padding: '12px',
+    fontSize: '16px',
+    borderRadius: '6px',
+    border: '1px solid #ccc',
+    width: '100%',
+  },
+  button: {
+    padding: '14px',
+    backgroundColor: '#850836',
+    color: 'white',
+    fontSize: '18px',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+  },
+  footer: {
+    marginTop: '25px',
+    fontSize: '14px',
+    color: '#fff',
+    textAlign: 'center',
+    lineHeight: '1.6',
+  },
 };
 
 export default ForgotPassword;
