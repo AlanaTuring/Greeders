@@ -10,4 +10,5 @@ const organizerSchema = new mongoose.Schema({
   type: { type: String, enum: ['Club', 'Society', 'Faculty'] } // New field to help us determine what to populate
 });
 
+
 module.exports = mongoose.model("Organizer", organizerSchema);

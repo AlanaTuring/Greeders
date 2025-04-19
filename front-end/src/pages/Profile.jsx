@@ -173,7 +173,7 @@ const styles = {
   eventContent: {
     color: "#333",
     position: "relative",
-    marginTop: "-30px"
+    marginTop: "0px"
   },
   deleteButton: {
     position: "absolute",

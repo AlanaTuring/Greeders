@@ -3,10 +3,17 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const cors = require('cors');
+require('dotenv').config(); // Make sure this is at the top
 
 const Student = require('../models/Student'); // Import the Student model
 const Organizer = require('../models/Organizer'); // Import the Organizer model
 const router = express.Router();
+
+
+
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+
 
 // Enable CORS with credentials
 const corsOptions = {
@@ -137,6 +144,85 @@ router.post('/logout', (req, res) => {
     }
     res.json({ success: true, message: 'Logout successful' });
   });
+});
+
+
+
+// nermine is irreplacable, I have never known, never thought i will know, will never know, someone who is like her, she 
+//changes my percpetions on things, things that i never expected that i will change my perceptons on, because she's just
+// too powerful in a silent way, she can change you with a word, with a look, with a feeling, and you can just do nothing
+// because her words are logical, her looks are strong, and her feelings are too pure and touching
+// i love you nermine 
+
+
+router.post('/reset-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    let user = await Student.findOne({ email }) || await Organizer.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' }); // ✅ return JSON here
+    }
+
+    const role = user.role || (user instanceof Organizer ? 'organizer' : 'student');
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetTokenExpires = Date.now() + 3600000; // 1 hour
+
+    user.resetToken = resetToken;
+    user.resetTokenExpires = resetTokenExpires;
+    await user.save();
+
+    const resetLink = `${process.env.CLIENT_URL}/reset-password/${user._id}?role=${role}&token=${resetToken}`;
+
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: `"Eventure" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Eventure Password Reset",
+      text: `You requested a password reset. Click the link below to reset your password:\n\n${resetLink}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    return res.json({ msg: "Reset link sent!" }); // ✅ successful JSON response
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: 'Server error' }); // ✅ JSON error response
+  }
+});
+
+// Reset Password: Validate token and update password
+router.post('/reset-password/:id', async (req, res) => {
+  const { password } = req.body;
+  const { id } = req.params;
+  const { role, token } = req.query;
+
+  try {
+    let user = role === 'organizer'
+      ? await Organizer.findById(id)
+      : await Student.findById(id);
+
+    if (!user || user.resetToken !== token || user.resetTokenExpires < Date.now()) {
+      return res.status(400).json({ msg: "Invalid or expired reset token" });
+    }
+
+    user.password = password; // Will be auto-hashed by the .pre('save') hook
+    user.resetToken = undefined;
+    user.resetTokenExpires = undefined;
+
+    await user.save();
+
+    res.json({ msg: "Password reset successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Server error' });
+  }
 });
 
 module.exports = router;

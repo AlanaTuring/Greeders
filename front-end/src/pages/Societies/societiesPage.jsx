@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { jwtDecode } from "jwt-decode"; // For decoding JWT token if needed
+import { jwtDecode } from "jwt-decode";
 import calendarOverlay from "../../assets/calendar_overlay.png";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SocietiesPage = () => {
   const { id } = useParams();
@@ -12,7 +14,7 @@ const SocietiesPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [hovered, setHovered] = useState(false);
-  const [bgColor, setBgColor] = useState("rgb(255, 255, 255)"); // Default background color
+  const [bgColor, setBgColor] = useState("rgb(255, 255, 255)");
 
   useEffect(() => {
     fetch(`http://localhost:5001/api/societies/${id}`)
@@ -22,14 +24,13 @@ const SocietiesPage = () => {
         if (data.events) {
           setEvents(
             data.events.map((event) => ({
-              id: event._id,  // Ensure event.id is used correctly
+              id: event._id,
               title: event.title,
               start: event.date,
               description: event.description,
             }))
           );
         }
-
         if (data.logo) {
           extractColor(`/pics/${data.logo}`);
         }
@@ -39,39 +40,39 @@ const SocietiesPage = () => {
 
   const extractColor = (imageSrc) => {
     const img = new Image();
-    img.crossOrigin = "Anonymous"; // Ensure CORS compliance for external images
+    img.crossOrigin = "Anonymous";
     img.src = imageSrc;
-
     img.onload = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0, img.width, img.height);
-
-      // Get the pixel data from the center of the image
       const sampleX = Math.floor(img.width / 2);
       const sampleY = Math.floor(img.height / 2);
       const pixelData = ctx.getImageData(sampleX, sampleY, 1, 1).data;
-
       const rgbColor = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
       setBgColor(rgbColor);
     };
   };
 
   const getTokenFromSession = () => {
-    return localStorage.getItem("userToken"); // Retrieve the token from localStorage
+    return localStorage.getItem("userToken");
+  };
+
+  const getStudentIdFromToken = (token) => {
+    const decoded = jwtDecode(token);
+    return decoded.studentId;
   };
 
   const bookmarkEvent = async () => {
     const token = getTokenFromSession();
     if (!token) {
-      alert("You must be logged in to bookmark events.");
+      toast.error("You must be logged in to bookmark events.");
       return;
     }
 
-    const studentId = getStudentIdFromToken(token); // Decode token or fetch user details
+    const studentId = getStudentIdFromToken(token);
     const eventId = selectedEvent.id;
 
     try {
@@ -81,24 +82,19 @@ const SocietiesPage = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ studentId, eventId }), // Pass both IDs
+        body: JSON.stringify({ studentId, eventId }),
       });
 
       if (response.ok) {
-        alert("Event bookmarked successfully!");
-        setModalOpen(false); // Close the modal after bookmarking
+        toast.success("Event bookmarked successfully!");
+        setModalOpen(false);
       } else {
         const error = await response.json();
-        console.error("Error bookmarking event:", error.message);
+        toast.error("Error bookmarking event: " + error.message);
       }
     } catch (error) {
-      console.error("Error bookmarking event:", error);
+      toast.error("An unexpected error occurred: " + error.message);
     }
-  };
-
-  const getStudentIdFromToken = (token) => {
-    const decoded = jwtDecode(token);
-    return decoded.studentId; // or whatever key your backend uses
   };
 
   if (!society) return <div>Loading...</div>;
@@ -107,13 +103,10 @@ const SocietiesPage = () => {
     <div
       style={{
         ...styles.container,
-        backgroundImage: `linear-gradient(rgba(${bgColor.replace(
-          "rgb(", ""
-        ).replace(")", "")}, 0.7), rgba(${bgColor.replace(
-          "rgb(", ""
-        ).replace(")", "")}, 0.7)), url(${calendarOverlay})`,
+        backgroundImage: `linear-gradient(rgba(${bgColor.replace("rgb(", "").replace(")", "")}, 0.7), rgba(${bgColor.replace("rgb(", "").replace(")", "")}, 0.7)), url(${calendarOverlay})`,
       }}
     >
+      <ToastContainer />
       <div style={styles.headerContainer}>
         <div style={styles.textContainer}>
           <h1
@@ -153,10 +146,7 @@ const SocietiesPage = () => {
             center: "title",
             right: "",
           }}
-          eventClick={(info) => {
-            setSelectedEvent(info.event);
-            setModalOpen(true);
-          }}
+          eventClick={(info) => setModalOpen(true) || setSelectedEvent(info.event)}
           height="auto"
           aspectRatio={2}
           eventContent={(eventInfo) => (
@@ -167,11 +157,10 @@ const SocietiesPage = () => {
         />
       </div>
 
-      {/* Modal */}
       {modalOpen && (
         <div style={styles.modalOverlay} onClick={() => setModalOpen(false)}>
           <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ color: "#6A1B9A" }}>{selectedEvent?.title}</h2>
+            <h2 style={{ color: "#923152" }}>{selectedEvent?.title}</h2>
             <p style={{ color: "#444" }}>{selectedEvent?.extendedProps?.description}</p>
 
             <button onClick={() => setModalOpen(false)} style={styles.closeButton}>
@@ -193,12 +182,11 @@ const styles = {
     padding: "20px",
     width: "100%",
     minHeight: "100vh",
-    backgroundSize: "cover", // Keeps the image stretched across the container
-    backgroundPosition: "center center", // Center the image
-    backgroundRepeat: "no-repeat", // Prevent background repetition
+    backgroundSize: "cover",
+    backgroundPosition: "center center",
+    backgroundRepeat: "no-repeat",
     transition: "background-color 0.5s ease",
   },
-
   headerContainer: {
     display: "flex",
     alignItems: "center",
@@ -226,12 +214,11 @@ const styles = {
   },
   calendarTitle: {
     color: "white",
-    fontSize: "50px", // Increase the font size
+    fontSize: "50px",
     fontWeight: "bold",
-    textAlign: "center", // Center the text
-    margin: "30px 0", // Add spacing
+    textAlign: "center",
+    margin: "30px 0",
   },
-
   calendarContainer: {
     display: "flex",
     justifyContent: "center",
@@ -275,16 +262,17 @@ const styles = {
     whiteSpace: "normal",
   },
   closeButton: {
-    backgroundColor: "#bc7c8c",
+    backgroundColor: "#923152",
     color: "white",
     border: "none",
     padding: "10px 20px",
     borderRadius: "5px",
     cursor: "pointer",
     marginTop: "20px",
+    marginRight: "15px",
   },
   bookmarkButton: {
-    backgroundColor: "#6A1B9A", // You can customize the color
+    backgroundColor: "#923152",
     color: "white",
     border: "none",
     padding: "10px 20px",

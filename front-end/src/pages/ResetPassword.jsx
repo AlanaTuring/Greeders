@@ -14,7 +14,7 @@ const ResetPassword = () => {
     const userId = window.location.pathname.split("/").pop();
 
     try {
-      const response = await fetch(`/api/auth/reset-password/${userId}?role=${role}`, {
+      const response = await fetch(`http://localhost:5001/api/auth/reset-password/${userId}?role=${role}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

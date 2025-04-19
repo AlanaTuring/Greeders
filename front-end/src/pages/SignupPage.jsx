@@ -77,19 +77,8 @@ const SignupPage = () => {
             />
           </div>
 
-          <div style={styles.inputContainer}>
-            <label htmlFor="role" style={styles.label}>Register as</label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              style={styles.input}
-              required
-            >
-              <option value="student">Student</option>
-              <option value="organizer">Organizer</option>
-            </select>
-          </div>
+          {/* Removed role selection, always defaults to student */}
+          <input type="hidden" name="role" value="student" />
 
           <button type="submit" style={styles.button}>Sign Up</button>
           
@@ -181,6 +170,5 @@ const styles = {
     textDecoration: 'underline',
   },
 };
-
 
 export default SignupPage;
