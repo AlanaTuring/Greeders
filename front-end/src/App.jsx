@@ -37,7 +37,7 @@ const App = () => {
       setLoading(true);
   
       // First, get the organizer object by email to find the organizer ID
-      const organizerRes = await fetch(`http://localhost:5001/api/organizers/${email}`);
+      const organizerRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/organizers/${email}`); 
       const organizerData = await organizerRes.json();
   
       if (!organizerRes.ok) {
@@ -49,7 +49,7 @@ const App = () => {
       const organizerId = organizerData._id;
   
       // Now fetch the dashboard data using the organizer ID
-      const dashboardRes = await fetch(`http://localhost:5001/api/organizers/dashboard/${organizerId}`);
+      const dashboardRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/organizers/dashboard/${organizerId}`); 
       const dashboardData = await dashboardRes.json();
   
       if (!dashboardRes.ok) {

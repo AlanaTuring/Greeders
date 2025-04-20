@@ -13,8 +13,8 @@ const EditEvent = () => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/events/${eventId}`);
-
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/events/${eventId}`);
+        
         if (!response.ok) {
           throw new Error(`Failed to fetch event data. Status: ${response.status}`);
         }
@@ -60,7 +60,7 @@ const EditEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:5001/api/events/${eventId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/events/${eventId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

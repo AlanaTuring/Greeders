@@ -16,7 +16,7 @@ const nodemailer = require("nodemailer");
 
 // Enable CORS with credentials
 const corsOptions = {
-  origin: 'http://localhost:5173',  // Make sure this matches your React frontend URL
+  origin: process.env.CLIENT_URL,  // Make sure this matches your React frontend URL
   credentials: true,
 };
 router.use(cors(corsOptions));

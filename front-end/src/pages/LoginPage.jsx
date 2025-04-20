@@ -25,7 +25,7 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5001/api/auth/login", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const LoginPage = () => {
 
       // ✅ First check: Organizer
       try {
-        const organizerRes = await fetch(`http://localhost:5001/api/organizers/check-role/${email}`);
+        const organizerRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/organizers/check-role/${email}`); 
         const organizerData = await organizerRes.json();
         console.log("Organizer role response:", organizerData);
         if (organizerRes.ok && organizerData?.role === "organizer") {
@@ -65,7 +65,7 @@ const LoginPage = () => {
       // ✅ Fallback check: Student
       if (!role) {
         try {
-          const studentRes = await fetch(`http://localhost:5001/api/students/check-role/${email}`);
+          const studentRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/students/check-role/${email}`); 
           const studentData = await studentRes.json();
           console.log("Student role response:", studentData);
           if (studentRes.ok && studentData?.role === "student") {

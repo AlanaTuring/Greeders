@@ -24,9 +24,9 @@ const AddEventForm = ({ onAddEvent, clubId }) => {
     console.log("Sending Event Data:", eventDetails); // Debugging Step 1
 
     try {
-      const response = await fetch('http://localhost:5001/api/events', { // Ensure this matches the correct backend URL
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/events`, { // Ensure this matches the correct backend URL
         method: 'POST',
-        headers: {
+        headers: {                     
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(eventDetails),

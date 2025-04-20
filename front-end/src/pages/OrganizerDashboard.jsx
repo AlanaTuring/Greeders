@@ -18,7 +18,7 @@ const OrganizerDashboard = () => {
       return;
     }
 
-    fetch(`http://localhost:5001/api/organizers/${userEmail}`)
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/organizers/${userEmail}`)  
       .then((response) => response.json())
       .then((data) => {
         setOrganizer(data);
@@ -53,7 +53,7 @@ const OrganizerDashboard = () => {
         // Fetch data for the appropriate entity (club/society/faculty)
         const fetchEntityData = async () => {
           try {
-            const res = await fetch(`http://localhost:5001/api/${endpoints[normalizedType]}/${managing._id}`);
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/${endpoints[normalizedType]}/${managing._id}`);
             if (res.ok) {
               const entity = await res.json();
               setEntityData(entity);
@@ -76,7 +76,7 @@ const OrganizerDashboard = () => {
   }, [userEmail]);
 
   const handleDeleteEvent = (eventId) => {
-    fetch(`http://localhost:5001/api/events/${eventId}`, {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/events/${eventId}`, {  
       method: 'DELETE',
     })
       .then((response) => {

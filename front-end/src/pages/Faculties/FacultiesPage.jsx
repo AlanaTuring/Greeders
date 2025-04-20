@@ -17,7 +17,7 @@ const FacultyPage = () => {
   const [bgColor, setBgColor] = useState("rgb(255, 255, 255)");
 
   useEffect(() => {
-    fetch(`http://localhost:5001/api/faculties/${id}`)
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/faculties/${id}`) 
       .then((response) => response.json())
       .then((data) => {
         setFaculty(data);
@@ -81,7 +81,7 @@ const FacultyPage = () => {
     const eventId = selectedEvent.id;
 
     try {
-      const response = await fetch("http://localhost:5001/api/bookmarks", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/bookmarks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -15,7 +15,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("userToken");
-        const res = await fetch("http://localhost:5001/api/profile", {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/profile`, {  
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -36,7 +36,7 @@ const Profile = () => {
   const handleDelete = async (eventId) => {
     const token = localStorage.getItem("userToken");
     try {
-      const res = await fetch(`http://localhost:5001/api/bookmarks/${eventId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/bookmarks/${eventId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
