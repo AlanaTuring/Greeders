@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import backgroundImage from "../../assets/GreenOval.jpg";
 
 const Clubs = () => {
   const [clubs, setClubs] = useState([]);
@@ -8,8 +7,7 @@ const Clubs = () => {
   useEffect(() => {
     const fetchClubs = async () => {
       try {
-        // Adjust the URL if your backend is hosted elsewhere
-        const response = await fetch("http://localhost:5001/api/clubs");
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/clubs`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -30,16 +28,26 @@ const Clubs = () => {
       <div style={styles.grid}>
         {clubs.map((club, index) => (
           <Link
-            key={club._id} // Use the club's _id from MongoDB, fallback to index if needed
-            // If you want to navigate to a club detail page, you can use the club's _id in the URL
+            key={club._id}
             to={club.link ? club.link : `/clubs/${club._id}`}
             style={{ textDecoration: "none", position: "relative", zIndex: 2 }}
           >
             <div
-              className="club-card"
-              style={{ ...styles.card, backgroundColor: "#9c324f" }}
+              style={{
+                ...styles.card,
+        
+              }}
             >
-              <h2 style={styles.text}>{club.name}</h2>
+              <div style={styles.logoBox}>
+                <img
+                  src={`/pics/${club.logo}`}
+                  alt={club.name}
+                  style={styles.logo}
+                />
+              </div>
+              <div style={styles.nameBox}>
+                <h2 style={styles.text}>{club.name}</h2>
+              </div>
             </div>
           </Link>
         ))}
@@ -53,8 +61,7 @@ const styles = {
     textAlign: "center",
     padding: "20px",
     width: "100%",
-    backgroundColor: "rgba(132, 4, 50, 0.8)",
-    backgroundImage: `url(${backgroundImage})`,
+    backgroundColor: "#FFFFFF",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -66,43 +73,62 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(167, 97, 117, 0.5)",
+    backgroundColor: "#ffffff",
     zIndex: 1,
   },
   header: {
-    fontSize: "100px",
+    fontSize: "150px",
     marginBottom: "70px",
-    fontFamily: "Impact, fantasy",
-    color: "white",
+    fontFamily: "copperplate, fantasy",
+    color: "#4a4a4a",
     zIndex: 2,
     position: "relative",
+
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-    gap: "15px",
-    maxWidth: "100%",
-    padding: "10px",
-    margin: "0 auto",
+    gridTemplateColumns: "repeat(4, 1fr)", // Adjusted for 4 items per row
+    gap: "20px", // Increased gap for better spacing
+    padding: "20px",
     zIndex: 2,
   },
   card: {
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "180px",
-    borderRadius: "15px",
+    alignItems: "center", // Align logo and name horizontally
     textDecoration: "none",
-    boxSizing: "border-box",
     transition: "transform 0.3s ease",
     zIndex: 2,
+    borderRadius: "10px",
+    overflow: "hidden",
+    // boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", Soft shadow for effect
+    backgroundColor: "#f3f3fa", // White background for the whole card
+    padding: "10px", // Padding inside the card
+    border: "2px solid #e1e1e4",
+  },
+  logoBox: {
+    width: "100px", // Adjust width for a more rectangular layout
+    height: "100px", // Adjust height for a more rectangular logo box
+    marginRight: "20px", // Space between logo and name
+   
+  },
+  logo: {
+    width: "100%", // Logo fills the container
+    height: "100%",
+    objectFit: "contain", // Keep aspect ratio
+    display: "block",
+    borderRadius: "10px",
+  },
+  nameBox: {
+    flex: 1, // Allow name box to take up the remaining space
+    padding: "15px", // Padding for the name box
+    borderRadius: "8px", // Rounded corners for name box
   },
   text: {
-    color: "white",
-    fontSize: "30px",
-    textAlign: "center",
+    color: "black",
+    fontSize: "20px", // Font size for name
     fontWeight: "bold",
-    fontFamily: "New Century Schoolbook, TeX Gyre Schola, serif",
+    fontFamily: "Arial, sans-serif",
+    margin: 0,
   },
 };
 

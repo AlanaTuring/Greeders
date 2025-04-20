@@ -1,165 +1,184 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import backgroundVideo from "../assets/background-video.mp4"; // Correct path to background video
+import backgroundVideo from "../assets/background-video.mp4";
 
 const categories = [
-  { name: "AUB", color: "#bc7c8c", link: "/" },
-  { name: "Clubs", color: "#bc7c8c", link: "/clubs" },
-  { name: "Societies", color: "#bc7c8c", link: "/societies" },
-  { name: "Faculties", color: "#bc7c8c", link: "/faculties" },
+  { 
+    name: "Clubs", 
+    color: "#FFFFFF", 
+    link: "/clubs",
+    logo: "clubslogo.png",  // Add logo filename here
+    description: "Explore a variety of clubs, from academic groups to fun activities and more! Get involved and make new friends!" 
+  },
+  { 
+    name: "Societies", 
+    color: "#FFFFFF", 
+    link: "/societies",
+    logo: "societieslogo.png",  // Add logo filename here
+    description: "Join a society and expand your knowledge. Attend events and discover new passions with like-minded individuals!" 
+  },
+  { 
+    name: "Faculties", 
+    color: "#FFFFFF", 
+    link: "/faculties",
+    logo: "facultieslogo.png",  // Add logo filename here
+    description: "Learn about the various faculties at your university. Find out how to get involved and meet fellow students in your field!" 
+  },
 ];
 
 const Home = () => {
   return (
-    <div style={styles.container}>
-      {/* Add the keyframes animation in a style tag */}
-      <style>
-        {`
-          @keyframes slideIn {
-            from {
-              transform: translateX(-100%); /* Start off the screen to the left */
-            }
-            to {
-              transform: translateX(0); /* Move to the original position */
-            }
-          }
-        `}
-      </style>
+    <div style={styles.page}>
+      {/* Top Section with Video Background */}
+      <div style={styles.topSection}>
+        <video autoPlay loop muted style={styles.videoBackground}>
+          <source src={backgroundVideo} type="video/mp4" />
+        </video>
+        <div style={styles.overlay}>
+          <h1 style={styles.title}>Eventure</h1>
+          <p style={styles.description}>
+            The ultimate hub for all your university events! No more sifting
+            through endless emails or posters. Stay updated, get involved, and
+            make the most of your experience—all in one place!
+          </p>
+        </div>
+      </div>
 
-      {/* Left Side (Categories) */}
-      <div style={styles.leftSection}>
-        <h1 style={{ ...styles.header, animation: "slideIn 0.6s ease-out" }}>Categories</h1> {/* Animation applied here */}
-        <div style={styles.grid}>
-          {categories.map((category, index) => (
+      {/* Floating Categories Section */}
+      <div style={styles.floatingCategories}>
+        {categories.map((category, index) => {
+          let verticalOffset = 0;
+          if (index === 0) verticalOffset = 40; // Clubs - lower
+          if (index === 1) verticalOffset = -40; // Societies - higher
+          if (index === 2) verticalOffset = 40; // Faculties - lower
+          return (
             <Link
               key={index}
               to={category.link}
               style={{
                 ...styles.card,
                 backgroundColor: category.color,
-                animation: "slideIn 0.6s ease-out", // Apply the animation
+                transform: `translateY(${verticalOffset}px)`,
               }}
             >
-              <h2 style={styles.text}>{category.name}</h2>
+              {/* Display logo above the category name */}
+              <img
+                src={`./pics/${category.logo}`}  // Reference logo from the public folder
+                alt={`${category.name} logo`}
+                style={styles.logo}
+              />
+              <h2 style={styles.cardText}>{category.name}</h2>
+              <p style={styles.cardDescription}>{category.description}</p>
             </Link>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
-      {/* Right Side (Description with Background Video) */}
-      <div style={styles.rightSection}>
-        <video autoPlay loop muted style={styles.videoBackground}>
-          <source src={backgroundVideo} type="video/mp4" />
-        </video>
-        <div style={styles.overlay}>
-          <p style={styles.description}>
-            Welcome to <strong>Eventure</strong>, the ultimate hub for all your university events! 
-            No more sifting through endless emails or searching for posters. 
-            With Eventure, everything you need to know about campus events is right at your fingertips. 
-            Stay updated, get involved, and make the most of your university experience—all in one place!
-          </p>
-        </div>
+      {/* Gray Section Below Video */}
+      <div style={styles.graySection}>
+        {/* Add any additional content you'd like in the gray section here */}
       </div>
-
-      {/* Profile Button */}
-      <Link to="/profile" style={styles.profileButton}>
-        Profile
-      </Link>
     </div>
   );
 };
 
 const styles = {
-  container: {
-    display: "flex",
-    height: "100vh",  // Full height of the viewport
-  },
-  leftSection: {
-    width: "50%",
-    backgroundColor: "#923152", // Ensure the background color is applied
+  page: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    minHeight: "120vh", // <--- Add this line to allow scrolling
+  },
+  
+  topSection: {
+    position: "relative",
+    height: "100vh", // full screen
+    width: "100%",
+    overflow: "hidden",
+    marginBottom: 0,  // <-- Adjusted to remove extra space
+    padding: 0, 
+  },
+  videoBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    height: "100%",
+    width: "100%",
+    objectFit: "cover",
+    zIndex: -1,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    height: "100%",
+    width: "100%",
+    backgroundColor: "rgb(105,105,105, 0.6)",
+    display: "flex",
+    flexDirection: "column",
     justifyContent: "center",
-    height: "110vh", // Ensure it takes the full height of the viewport
+    alignItems: "center",
+    textAlign: "center",
+    padding: "0 20px",
   },
-  header: {
+  title: {
+    fontSize: "70px",
     color: "white",
-    fontSize: "80px",
-    fontFamily: "Impact, fantasy",
-    marginBottom: "50px",
+    fontWeight: "bold",
+    fontFamily: "verdana, fantasy",
+    marginBottom: "20px",
   },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "15px",
-    width: "90%",
+  description: {
+    fontSize: "25px",
+    color: "white",
+    fontFamily: "'Poppins', sans-serif",
+    maxWidth: "800px",
+    lineHeight: "1.8",
+  },
+  floatingCategories: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "70px",
+    marginTop: "-70px", // <-- Adjusted this to bring the categories closer
+    zIndex: 2,
+    position: "relative",
   },
   card: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "120px",
-    borderRadius: "15px",
+    flexDirection: "column", // Added this to stack text vertically
+    height: "250px",
+    width: "390px",
+    borderRadius: "12px",  // <-- Reduced border-radius to make edges less curvy
     textDecoration: "none",
-    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    boxShadow: "0 10px 20px rgba(0,0,0,0.2)",
+    transition: "transform 0.3s ease",
+    padding: "20px", // Added some padding for better spacing inside the card
   },
-  text: {
-    color: "white",
-    fontSize: "40px",
+  cardText: {
+    color: "#334155",
+    fontSize: "30px",
     fontFamily: "'Poppins', sans-serif",
-  },
-  rightSection: {
-    width: "50%",
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center",
-    padding: "20px",
-    height: "103vh", // Ensure the right section takes full height
-    overflow: "hidden", // Ensure the video is clipped to fit
-  },
-  videoBackground: {
-    position: "absolute",
-    top: "0",
-    left: "0",
-    width: "100%",
-    height: "100%",
-    objectFit: "cover", // Ensures the video covers the entire container
-    zIndex: -1, // Makes sure the video is behind the content
-  },
-  overlay: {
-    backgroundColor: "rgba(134, 0, 51, 0.3)",
-    position: "absolute", // Make overlay position absolute within the right section
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1, // Overlay should be above the video
-  },
-  description: {
-    fontSize: "24px",
     fontWeight: "bold",
-    fontFamily: "'Poppins', sans-serif",
-    color: "white",
-    lineHeight: "1.8",
-    width: "80%",
+    marginBottom: "-10px",
   },
-  profileButton: {
-    position: "fixed",
-    bottom: "20px",
-    right: "20px",
-    padding: "10px 20px",
-    backgroundColor: "#3f5c92",
-    color: "white",
-    borderRadius: "25px",
-    fontSize: "18px",
-    textDecoration: "none",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+  cardDescription: {
+    color: "#a7b1bd",
+    fontSize: "25px", 
+    fontFamily: "'Poppins', sans-serif",
+    fontWeight: "normal",
+    textAlign: "center", 
+  },
+  logo: {
+    width: "50px",  // Set a small size for the logos
+    height: "auto",
+  },
+  graySection: {
+    backgroundColor: "#e2e8f0", // Gray background
+    height: "50vh", // Adjust this to control the height
+    width: "98%",
+    padding: "20px",
+    marginTop: "-220px", // <-- Added this to reduce the space between sections
   },
 };
 

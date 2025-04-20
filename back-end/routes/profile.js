@@ -22,6 +22,7 @@ router.get("/", async (req, res) => {
     res.json({
       name: student.name,
       events: student.favorites.map(event => ({
+        _id: event._id,
         title: event.title,
         description: event.description,
         location: event.location,

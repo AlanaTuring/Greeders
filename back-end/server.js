@@ -12,6 +12,7 @@ const path = require('path');
 // Import Routes
 const eventRoutes = require('./routes/eventRoutes');
 const organizerRoutes = require('./routes/organizerRoutes');
+const studentRoutes = require('./routes/studentRoutes');
 const clubRoutes = require('./routes/ClubRoutes');
 const profileRoute = require("./routes/profile");
 const authRoutes = require('./routes/auth');
@@ -71,6 +72,7 @@ mongoose.connect(process.env.MONGO_URI, {
 // API Routes
 app.use('/api/events', eventRoutes); // Events route
 app.use('/api/organizers', organizerRoutes); // Organizer routes
+app.use('/api/students', studentRoutes);
 app.use('/api/clubs', clubRoutes); // Club routes
 app.use('/api/profile', profileRoute); // Profile routes
 app.use('/api/auth', authRoutes); // Auth routes

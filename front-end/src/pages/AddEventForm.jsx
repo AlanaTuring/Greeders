@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ Import navigate
 
-const AddEventForm = ({ onAddEvent, clubId }) => {
+const AddEventForm = ({ clubId }) => {
+  const navigate = useNavigate(); // ✅ Initialize navigate
+
   const [eventDetails, setEventDetails] = useState({
     title: '',
     date: '',
     location: '',
     description: '',
     time: '',
-    club: clubId || '', // Ensure this is populated with the club ID from the parent
-    form: 'club', // Default form is set to 'club', but can be changed by the user
+    club: clubId || '',
+    form: 'club',
   });
 
   const handleChange = (e) => {
@@ -21,10 +24,10 @@ const AddEventForm = ({ onAddEvent, clubId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Sending Event Data:", eventDetails); // Debugging Step 1
+    console.log("Sending Event Data:", eventDetails);
 
     try {
-      const response = await fetch('http://localhost:5001/api/events', { // Ensure this matches the correct backend URL
+      const response = await fetch('http://localhost:5001/api/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,27 +35,18 @@ const AddEventForm = ({ onAddEvent, clubId }) => {
         body: JSON.stringify(eventDetails),
       });
 
-      console.log("Response Status:", response.status); // Debugging Step 2
+      console.log("Response Status:", response.status);
 
       if (response.ok) {
         const newEvent = await response.json();
-        console.log("Server Response:", newEvent); // Debugging Step 3
-        onAddEvent(newEvent); // Update state in parent component
+        console.log("Server Response:", newEvent);
+        alert("Event added successfully! ✅");
 
-        alert("Event added successfully! ✅"); // Show success message
-
-        setEventDetails({
-          title: '',
-          date: '',
-          location: '',
-          description: '',
-          time: '',
-          club: '',
-          form: 'club', // Reset form to default value after submitting
-        });
+        // ✅ Redirect after successful event creation
+        navigate('/organizer/dashboard');
       } else {
         console.error("Error: Event not added. Check backend.");
-        alert(`Error adding event. Status: ${response.status} ❌`); // Enhanced error message
+        alert(`Error adding event. Status: ${response.status} ❌`);
       }
     } catch (error) {
       console.error("Fetch Error:", error);
@@ -156,7 +150,6 @@ const AddEventForm = ({ onAddEvent, clubId }) => {
   );
 };
 
-// Styling for the form page
 const styles = {
   formContainer: {
     padding: '20px',
@@ -194,7 +187,7 @@ const styles = {
   },
   submitButton: {
     padding: '12px 20px',
-    backgroundColor: '#923152', // Burgundy color
+    backgroundColor: '#923152',
     color: 'white',
     border: 'none',
     borderRadius: '5px',

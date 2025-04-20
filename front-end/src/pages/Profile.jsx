@@ -19,7 +19,7 @@ const Profile = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          credentials: "include", // Include cookies (if you're using sessions)
+          credentials: "include",
         });
 
         const data = await res.json();
@@ -33,49 +33,83 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.overlay}></div>
-      <h1 style={styles.header}>Profile</h1>
+  const handleDelete = async (eventId) => {
+    const token = localStorage.getItem("userToken");
+    try {
+      const res = await fetch(`http://localhost:5001/api/bookmarks/${eventId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      <div style={styles.profileSection}>
+      const data = await res.json();
+      if (res.ok) {
+        setEvents((prevEvents) =>
+          prevEvents.filter((event) => event._id !== eventId)
+        );
+      } else {
+        console.error("Failed to delete event:", data.message);
+      }
+    } catch (err) {
+      console.error("Error deleting event:", err);
+    }
+  };
+
+  return (
+    <div>
+      {/* TOP SECTION with background image */}
+      <div style={styles.topSection}>
+        <div style={styles.overlay}></div>
+        <h1 style={styles.header}>My Events</h1>
         <div style={styles.profileInfo}>
           <h2 style={styles.username}>{name}</h2>
         </div>
       </div>
 
-      <h2 style={styles.eventsTitle}>My Events</h2>
-      <ul style={styles.eventsList}>
-        {events.length > 0 ? (
-          events.map((event, index) => (
-            <li key={index} style={styles.eventItem}>
-              <strong>{event.title}</strong>
-              <br />
-              {event.description}
-              <br />
-              🕒 {formatDate(event.date)} | 📍 {event.location}
-            </li>
-          ))
-        ) : (
-          <li>No events available.</li>
-        )}
-      </ul>
+      {/* BOTTOM SECTION with solid background */}
+      <div style={styles.bottomSection}>
+        <ul style={styles.eventsList}>
+          {events.length > 0 ? (
+            events.map((event, index) => (
+              <li key={index} style={styles.eventItem}>
+                <div style={styles.eventContent}>
+                  <h3 style={styles.eventTitle}>{event.title}</h3>
+                  <p style={styles.eventDescription}>{event.description}</p>
+                  <p>
+                    🕒 {formatDate(event.date)} <br  />
+                      📍 {event.location}
+                  </p>
+                  <button
+                    style={styles.deleteButton}
+                    onClick={() => handleDelete(event._id)}
+                  >
+                    ❌
+                  </button>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li>No events available.</li>
+          )}
+        </ul>
+      </div>
     </div>
   );
 };
 
 const styles = {
-  container: {
-    textAlign: "center",
-    padding: "20px",
-    width: "100%",
-    backgroundColor: "rgba(148, 172, 196, 0.8)",
+  topSection: {
     backgroundImage: `url(${backgroundImage})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     position: "relative",
-    minHeight: "100vh",
+    height: "600px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
   overlay: {
     position: "absolute",
@@ -83,58 +117,78 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(148, 172, 196, 0.5)",
+    backgroundColor: "rgb(102, 152, 200, 0.4)",
     zIndex: 1,
   },
   header: {
-    fontSize: "80px",
-    marginBottom: "30px",
-    fontFamily: "Impact, fantasy",
+    fontSize: "100px",
+    fontFamily: "copperplate, fantasy",
     color: "white",
     zIndex: 2,
-    position: "relative",
-  },
-  profileSection: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: "40px",
-    zIndex: 2,
-    position: "relative",
+    margin: 0,
   },
   profileInfo: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
+    zIndex: 2,
+    marginTop: "10px",
   },
   username: {
     color: "white",
-    fontSize: "30px",
+    fontSize: "45px",
     fontWeight: "bold",
   },
-  eventsTitle: {
-    fontSize: "30px",
-    color: "white",
-    fontWeight: "bold",
-    marginBottom: "20px",
-    zIndex: 2,
-    position: "relative",
+  bottomSection: {
+    backgroundColor: "#e2e8f0",
+    padding: "40px 20px",
+    minHeight: "100vh",
+    textAlign: "center",
   },
   eventsList: {
     listStyleType: "none",
     padding: 0,
-    zIndex: 2,
-    position: "relative",
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: "30px",
   },
   eventItem: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    padding: "10px",
-    borderRadius: "5px",
-    margin: "10px 0",
-    fontSize: "18px",
-    color: "white",
+    backgroundColor: "#ffffff",
+    padding: "25px 20px 20px 20px",
+    borderRadius: "20px",
+    width: "340px",
+    boxShadow: "0 6px 15px rgba(0, 0, 0, 0.15)",
+    textAlign: "left",
+    position: "relative", // Needed for absolute ❌ positioning
+    fontSize: "25px", // Apply consistent font size to content
     lineHeight: "1.6",
   },
+  eventTitle: {
+    fontSize: "30px",
+    fontWeight: "bold",
+    marginBottom: "12px",
+  },
+  eventDescription: {
+    fontSize: "25px",
+    marginBottom: "15px",
+  },
+  eventContent: {
+    color: "#333",
+    position: "relative",
+    marginTop: "-30px"
+  },
+  deleteButton: {
+    position: "absolute",
+    top: "1px", // very close to top
+    right: "1px", // very close to right edge
+    backgroundColor: "transparent",
+    color: "#e53e3e",
+    border: "none",
+    borderRadius: "50%",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "15px",
+    zIndex: 5,
+  },
 };
+
 
 export default Profile;
