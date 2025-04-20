@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./styles.css"; // Ensure this path matches your file structure
 
 const ForgotPassword = () => {
@@ -17,19 +19,24 @@ const ForgotPassword = () => {
         },
         body: JSON.stringify({ email }),
       });
-      
 
       const result = await response.json();
-      alert(result.msg || "Reset link sent!");
-      navigate('/'); // Redirect after sending reset link
+
+      if (response.ok) {
+        toast.success(result.msg || "Reset link sent!");
+        setTimeout(() => navigate('/'), 2000); // Delayed redirect
+      } else {
+        toast.error(result.msg || "Something went wrong. Please try again.");
+      }
     } catch (error) {
       console.error("Error sending reset link:", error);
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
   return (
     <div style={styles.background}>
+      <ToastContainer />
       <div style={styles.overlay}>
         <h1 style={styles.heading}>Forgot Password</h1>
         <form onSubmit={handleForgotPassword} style={styles.form}>

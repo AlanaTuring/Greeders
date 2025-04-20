@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './styles.css';
 
 const SignupPage = () => {
@@ -22,19 +24,20 @@ const SignupPage = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert(result.msg);
+        toast.success(result.msg);
         navigate('/login');
       } else {
-        alert(result.msg || 'Something went wrong. Please try again.');
+        toast.error(result.msg || 'Something went wrong. Please try again.');
       }
     } catch (error) {
       console.error('Signup error:', error);
-      alert('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     }
   };
 
   return (
     <div style={styles.background}>
+      <ToastContainer />
       <div style={styles.overlay}>
         <h1 style={styles.heading}>Sign Up</h1>
         <form onSubmit={handleSubmit} style={styles.form}>
@@ -77,12 +80,10 @@ const SignupPage = () => {
             />
           </div>
 
-          {/* Removed role selection, always defaults to student */}
           <input type="hidden" name="role" value="student" />
 
           <button type="submit" style={styles.button}>Sign Up</button>
-          
-          {/* Login Link within the form */}
+
           <p style={styles.footer}>
             Already have an account? <a href="/login" style={styles.link}>Login</a>
           </p>
@@ -104,13 +105,13 @@ const styles = {
   },
   overlay: {
     position: 'absolute',
-    width: '50%', // Left half of the screen
-    height: '100vh', // Full height
+    width: '50%',
+    height: '100vh',
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center', // Center content vertically
-    alignItems: 'center', // Center content horizontally
+    justifyContent: 'center',
+    alignItems: 'center',
     boxSizing: 'border-box',
     padding: '20px',
   },

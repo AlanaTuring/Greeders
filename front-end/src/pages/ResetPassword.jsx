@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./styles.css"; // Ensure this path matches your file structure
 
 const ResetPassword = () => {
@@ -14,27 +16,36 @@ const ResetPassword = () => {
     const userId = window.location.pathname.split("/").pop();
 
     try {
-      const response = await fetch(`http://localhost:5001/api/auth/reset-password/${userId}?role=${role}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password }),
-      });
+      const response = await fetch(
+        `http://localhost:5001/api/auth/reset-password/${userId}?role=${role}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ password }),
+        }
+      );
 
       const result = await response.json();
-      alert(result.msg);
-      if (result.msg === "Password reset successful") {
-        navigate("/login");  // Redirect to login page after successful reset
+
+      if (response.ok) {
+        toast.success(result.msg);
+        if (result.msg === "Password reset successful") {
+          setTimeout(() => navigate("/login"), 2000);
+        }
+      } else {
+        toast.error(result.msg || "Something went wrong. Please try again.");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     }
   };
 
   return (
     <div style={styles.background}>
+      <ToastContainer />
       <div style={styles.overlay}>
         <h1 style={styles.heading}>Reset Password</h1>
         <p style={styles.subheading}>Enter your new password below.</p>
@@ -65,7 +76,7 @@ const ResetPassword = () => {
 
 const styles = {
   background: {
-    backgroundImage: 'url(/aubtower.png)', // Match the background image from ForgotPassword
+    backgroundImage: 'url(/aubtower.png)',
     backgroundSize: '130%',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',

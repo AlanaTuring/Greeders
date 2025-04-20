@@ -1,33 +1,63 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from "react";
 
-// Create UserContext
 const UserContext = createContext();
 
-// Create UserProvider component to manage the context state
 const UserProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
-  const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail") || "");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [role, setRole] = useState("");
+  const [token, setToken] = useState("");
 
-  // Login function
-  const login = (token, email) => {
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("userEmail");
+    const storedRole = localStorage.getItem("role");
+    const storedToken = localStorage.getItem("userToken");
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+    if (storedEmail && storedRole && storedToken && loggedIn) {
+      setUserEmail(storedEmail);
+      setRole(storedRole);
+      setToken(storedToken);
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const login = (token, email, userRole) => {
     setIsLoggedIn(true);
     setUserEmail(email);
+    setRole(userRole);
+    setToken(token);
+
     localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("userEmail", email);
+    localStorage.setItem("role", userRole);
     if (token) localStorage.setItem("userToken", token);
-    if (email) localStorage.setItem("userEmail", email);
   };
 
-  // Logout function
   const logout = () => {
     setIsLoggedIn(false);
     setUserEmail("");
+    setRole("");
+    setToken("");
+
     localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userToken");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userToken");
   };
 
   return (
-    <UserContext.Provider value={{ isLoggedIn, login, logout, userEmail }}>
+    <UserContext.Provider
+      value={{
+        isLoggedIn,
+        login,
+        logout,
+        userEmail,
+        role,
+        setRole,
+        token,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

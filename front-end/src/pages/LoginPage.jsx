@@ -1,18 +1,26 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { login } = useContext(UserContext);
+  const { login, isLoggedIn } = useContext(UserContext);
+
+  useEffect(() => {
+    const savedRole = localStorage.getItem("role");
+    if (isLoggedIn && savedRole === "student") navigate("/home");
+    if (isLoggedIn && savedRole === "organizer") navigate("/organizer");
+  }, [isLoggedIn, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Email and password are required!");
+      toast.error("Email and password are required!");
       return;
     }
 
@@ -27,26 +35,73 @@ const LoginPage = () => {
       });
 
       const data = await response.json();
+      console.log("Login response:", data);
 
-      if (response.ok) {
-        const token = data?.token;
-        if (token) {
-          localStorage.setItem("userToken", token);
-          localStorage.setItem("userEmail", email); // Save the email
+      if (!response.ok) {
+        toast.error(data.message || "Invalid credentials");
+        return;
+      }
+
+      const token = data?.token;
+      if (!token) throw new Error("Token not received");
+
+      localStorage.setItem("userToken", token);
+      localStorage.setItem("userEmail", email);
+
+      let role = null;
+
+      // ✅ First check: Organizer
+      try {
+        const organizerRes = await fetch(`http://localhost:5001/api/organizers/check-role/${email}`);
+        const organizerData = await organizerRes.json();
+        console.log("Organizer role response:", organizerData);
+        if (organizerRes.ok && organizerData?.role === "organizer") {
+          role = "organizer";
         }
-        login(token);
-        navigate("/role-selection"); // you can change this to "/" later
-      } else {
-        alert(data.message || "Invalid credentials");
+      } catch (err) {
+        console.error("Organizer role check failed:", err);
+      }
+
+      // ✅ Fallback check: Student
+      if (!role) {
+        try {
+          const studentRes = await fetch(`http://localhost:5001/api/students/check-role/${email}`);
+          const studentData = await studentRes.json();
+          console.log("Student role response:", studentData);
+          if (studentRes.ok && studentData?.role === "student") {
+            role = "student";
+          }
+        } catch (err) {
+          console.error("Student role check failed:", err);
+        }
+      }
+
+      if (!role) {
+        toast.error("Login succeeded, but user role could not be determined.");
+        return;
+      }
+
+      localStorage.setItem("role", role);
+      login(token, email, role);
+
+      console.log("Final assigned role:", role);
+
+      toast.success("Login successful!");
+
+      if (role === "student") {
+        navigate("/home");
+      } else if (role === "organizer") {
+        navigate("/organizer");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred, please try again.");
+      console.error("Login Error:", error);
+      toast.error("An error occurred, please try again.");
     }
   };
 
   return (
     <div style={styles.background}>
+      <ToastContainer />
       <div style={styles.overlay}>
         <h1 style={styles.heading}>Login</h1>
         <form onSubmit={handleLogin} style={styles.form}>

@@ -12,6 +12,7 @@ const path = require('path');
 // Import Routes
 const eventRoutes = require('./routes/eventRoutes');
 const organizerRoutes = require('./routes/organizerRoutes');
+const studentRoutes = require('./routes/studentRoutes');
 const clubRoutes = require('./routes/ClubRoutes');
 const profileRoute = require("./routes/profile");
 const authRoutes = require('./routes/auth');
@@ -71,6 +72,7 @@ mongoose.connect(process.env.MONGO_URI, {
 // API Routes
 app.use('/api/events', eventRoutes); // Events route
 app.use('/api/organizers', organizerRoutes); // Organizer routes
+app.use('/api/students', studentRoutes);
 app.use('/api/clubs', clubRoutes); // Club routes
 app.use('/api/profile', profileRoute); // Profile routes
 app.use('/api/auth', authRoutes); // Auth routes
@@ -78,25 +80,25 @@ app.use('/api/societies', societyRoutes); // Societies routes
 app.use('/api/faculties', facultyRoutes); // Faculties routes
 app.use('/api/bookmarks', bookmarkRoutes); // ✅ ADD THIS LINE
 
-// Serve React in production (if applicable)
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../front-end/build'))); // Static files from build
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../front-end/build/index.html')); // Catch-all route for React
-  });
-} else {
-  // Serve static files in development (if applicable)
-  app.use(express.static(path.join(__dirname, '../front-end/public')));
-  app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../front-end/public/index.html'));
-  });
-  app.get('/signup', (req, res) => {
-    res.sendFile(path.join(__dirname, '../front-end/public/signup.html'));
-  });
-  app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../front-end/public/login.html'));
-  });
-}
+// // Serve React in production (if applicable)
+// if (process.env.NODE_ENV === 'production') {
+//   app.use(express.static(path.join(__dirname, '../front-end/build'))); // Static files from build
+//   app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../front-end/build/index.html')); // Catch-all route for React
+//   });
+// } else {
+//   // Serve static files in development (if applicable)
+//   app.use(express.static(path.join(__dirname, '../front-end/public')));
+//   app.get('/', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../front-end/public/index.html'));
+//   });
+//   app.get('/signup', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../front-end/public/signup.html'));
+//   });
+//   app.get('/login', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../front-end/public/login.html'));
+//   });
+// }
 
 // Error handler
 app.use((err, req, res, next) => {

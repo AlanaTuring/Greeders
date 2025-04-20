@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const cors = require('cors');
-require('dotenv').config(); // Make sure this is at the top
+require('dotenv').config(); 
 
 const Student = require('../models/Student'); // Import the Student model
 const Organizer = require('../models/Organizer'); // Import the Organizer model
@@ -14,10 +14,9 @@ const router = express.Router();
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
-
 // Enable CORS with credentials
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: 'http://localhost:5173',  // Make sure this matches your React frontend URL
   credentials: true,
 };
 router.use(cors(corsOptions));
@@ -67,6 +66,8 @@ router.post('/login', async (req, res) => {
     let student = await Student.findOne({ email });
 
     if (student) {
+      console.log("Logged in as student:", student.email); // Log student login
+
       // Student Login Logic
       const isMatch = await bcrypt.compare(password, student.password);
       if (!isMatch) {
@@ -75,7 +76,7 @@ router.post('/login', async (req, res) => {
 
       // Create JWT token for student
       const token = jwt.sign(
-        { id: student._id, email: student.email, role: student.role },
+        { id: student._id, email: student.email, role: 'student' }, // Set role to 'student'
         process.env.JWT_SECRET || 'supersecretjwtkey',
         { expiresIn: '1d' }
       );
@@ -84,6 +85,7 @@ router.post('/login', async (req, res) => {
         success: true,
         message: 'Login successful',
         token,
+        role: 'student', // Send role as 'student'
       });
     }
 
@@ -91,6 +93,8 @@ router.post('/login', async (req, res) => {
     let organizer = await Organizer.findOne({ email });
 
     if (organizer) {
+      console.log("Logged in as organizer:", organizer.email); // Log organizer login
+
       // Organizer Login Logic
       const isMatch = await bcrypt.compare(password, organizer.password);
       if (!isMatch) {
@@ -99,7 +103,7 @@ router.post('/login', async (req, res) => {
 
       // Create JWT token for organizer
       const token = jwt.sign(
-        { id: organizer._id, email: organizer.email, role: organizer.role },
+        { id: organizer._id, email: organizer.email, role: 'organizer' }, // Set role to 'organizer'
         process.env.JWT_SECRET || 'supersecretjwtkey',
         { expiresIn: '1d' }
       );
@@ -108,6 +112,7 @@ router.post('/login', async (req, res) => {
         success: true,
         message: 'Login successful',
         token,
+        role: 'organizer', // Send role as 'organizer'
       });
     }
 
@@ -145,14 +150,6 @@ router.post('/logout', (req, res) => {
     res.json({ success: true, message: 'Logout successful' });
   });
 });
-
-
-
-// nermine is irreplacable, I have never known, never thought i will know, will never know, someone who is like her, she 
-//changes my percpetions on things, things that i never expected that i will change my perceptons on, because she's just
-// too powerful in a silent way, she can change you with a word, with a look, with a feeling, and you can just do nothing
-// because her words are logical, her looks are strong, and her feelings are too pure and touching
-// i love you nermine 
 
 
 router.post('/reset-password', async (req, res) => {
@@ -224,5 +221,7 @@ router.post('/reset-password/:id', async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 });
+
+
 
 module.exports = router;

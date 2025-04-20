@@ -77,4 +77,16 @@ router.get("/dashboard/:organizerId", async (req, res) => {
   }
 });
 
+// ✅ Check if the email belongs to an organizer
+router.get("/check-role/:email", async (req, res) => {
+  const { email } = req.params;
+  try {
+    const organizer = await Organizer.findOne({ email });
+    if (organizer) return res.json({ role: "organizer" });
+    res.status(404).json({ message: "Not an organizer" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;

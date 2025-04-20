@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const EditEvent = () => {
-  const { eventId } = useParams();
+  const { eventId } = useParams();  // Extract eventId from URL params
   const navigate = useNavigate();
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch event data using the eventId from the URL
   useEffect(() => {
     const fetchEventData = async () => {
       try {
@@ -20,7 +21,7 @@ const EditEvent = () => {
 
         const data = await response.json();
 
-        // ✅ Ensure time is in "HH:mm" format
+        // Ensure time is in "HH:mm" format
         let formattedTime = data.time;
         if (formattedTime && formattedTime.length > 5) {
           formattedTime = formattedTime.slice(0, 5);
@@ -46,6 +47,7 @@ const EditEvent = () => {
     }
   }, [eventId]);
 
+  // Handle input changes in the form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEvent((prevEvent) => ({
@@ -54,6 +56,7 @@ const EditEvent = () => {
     }));
   };
 
+  // Handle form submission and update the event
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -71,7 +74,7 @@ const EditEvent = () => {
       }
 
       alert("Event updated successfully!");
-      navigate(`/events/${eventId}`);
+      navigate(`/events/${eventId}`);  // Navigate to the event page after successful update
     } catch (error) {
       console.error(error);
       alert("Failed to update event. Check console for details.");
@@ -87,25 +90,73 @@ const EditEvent = () => {
       <h2 style={styles.title}>Edit Event</h2>
       <form onSubmit={handleSubmit} style={styles.form}>
         <label style={styles.label}>Title:</label>
-        <input type="text" name="title" value={event.title || ""} onChange={handleInputChange} style={styles.input} required />
+        <input
+          type="text"
+          name="title"
+          value={event.title || ""}
+          onChange={handleInputChange}
+          style={styles.input}
+          required
+        />
 
         <label style={styles.label}>Description:</label>
-        <textarea name="description" value={event.description || ""} onChange={handleInputChange} style={styles.textarea} required />
+        <textarea
+          name="description"
+          value={event.description || ""}
+          onChange={handleInputChange}
+          style={styles.textarea}
+          required
+        />
 
         <label style={styles.label}>Club:</label>
-        <input type="text" name="club" value={event.club || ""} onChange={handleInputChange} style={styles.input} required />
+        <input
+          type="text"
+          name="club"
+          value={event.club || ""}
+          onChange={handleInputChange}
+          style={styles.input}
+          required
+        />
 
         <label style={styles.label}>Date:</label>
-        <input type="date" name="date" value={event.date ? event.date.substring(0, 10) : ""} onChange={handleInputChange} style={styles.input} required />
+        <input
+          type="date"
+          name="date"
+          value={event.date ? event.date.substring(0, 10) : ""}
+          onChange={handleInputChange}
+          style={styles.input}
+          required
+        />
 
         <label style={styles.label}>Location:</label>
-        <input type="text" name="location" value={event.location || ""} onChange={handleInputChange} style={styles.input} required />
+        <input
+          type="text"
+          name="location"
+          value={event.location || ""}
+          onChange={handleInputChange}
+          style={styles.input}
+          required
+        />
 
         <label style={styles.label}>Time:</label>
-        <input type="time" name="time" value={event.time || ""} onChange={handleInputChange} style={styles.input} required />
+        <input
+          type="time"
+          name="time"
+          value={event.time || ""}
+          onChange={handleInputChange}
+          style={styles.input}
+          required
+        />
 
         <label style={styles.label}>Form:</label>
-        <input type="text" name="form" value={event.form || ""} onChange={handleInputChange} style={styles.input} required />
+        <input
+          type="text"
+          name="form"
+          value={event.form || ""}
+          onChange={handleInputChange}
+          style={styles.input}
+          required
+        />
 
         <button type="submit" style={styles.button}>Save Changes</button>
       </form>
