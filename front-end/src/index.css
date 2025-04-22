@@ -1,44 +1,144 @@
-.societies-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  max-width: 400px;
-  margin: auto;
+/* Reset default margin and padding */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.society-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-  border-radius: 12px;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.society-card::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
+/* Ensure body takes full width and height */
+html, body {
+  height: 100%;
   width: 100%;
-  height: 40%;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
 }
 
-/* Background Colors */
-.bg-green { background-color: #1b5e20; }
-.bg-red { background-color: #b71c1c; }
-.bg-pink { background-color: #f48fb1; }
-.bg-darkpink { background-color: #e91e63; }
-.bg-blue { background-color: #1565c0; }
-.bg-yellow { background-color: #fbc02d; }
-.bg-brown { background-color: #795548; }
-.bg-black { background-color: #212121; }
-.bg-darkred { background-color: #880e4f; }
-.bg-gray { background-color: #616161; }
+/* Body and HTML styles */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  background-color: #f4f4f4; /* Adjust background color */
+}
+
+/* Global styles for layout scaling */
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure full height */
+}
+
+h1, h2, h3 {
+  font-size: clamp(20px, 5vw, 50px); /* Scalable heading font sizes */
+}
+
+/* Responsive container to prevent overflow */
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+/* Floating Categories Section */
+.floatingCategories {
+  display: flex;
+  justify-content: center;
+  gap: 5vw; /* Dynamic gap based on viewport width */
+  flex-wrap: wrap; /* Allows wrapping for smaller screens */
+  margin-top: -70px; /* Adjusted this to bring categories closer */
+  z-index: 2;
+  position: relative;
+}
+
+/* Cards scaling relative to viewport */
+.card {
+  width: 25vw; /* Card width scales with viewport width */
+  height: 25vh; /* Card height scales with viewport height */
+  flex-grow: 1;
+  max-width: 25%; /* Ensures no card exceeds 25% of the row width */
+  text-align: center;
+  padding: 3vw; /* Padding relative to viewport */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  border-radius: 12px;
+  margin: 2vw; /* Proportional margin */
+  text-decoration: none;
+  background-color: #fff; /* Ensure visibility on all screen sizes */
+}
+
+/* Text inside cards */
+.cardText {
+  font-size: clamp(18px, 3vw, 30px); /* Scalable font size for card title */
+  color: #334155;
+  font-weight: bold;
+}
+
+.cardDescription {
+  font-size: clamp(14px, 2vw, 25px); /* Scalable font size for description */
+  color: #a7b1bd;
+  text-align: center;
+}
+
+/* Adjust images */
+img {
+  width: 100%; /* Images should be responsive */
+  height: auto;
+  max-width: 60px; /* Limit maximum size for logos */
+}
+
+/* Media Queries for smaller devices */
+@media screen and (max-width: 768px) {
+  /* Adjust container padding for smaller screens */
+  .container {
+    padding: 0 10px;
+  }
+
+  /* Adjust card sizes and font for tablets and smaller screens */
+  .card {
+    width: 40vw; /* Adjust card width */
+    height: 40vh; /* Adjust card height */
+    padding: 4vw;
+    max-width: 40%; /* Max width adjustment */
+  }
+
+  /* Adjust text size for smaller screens */
+  .cardText {
+    font-size: clamp(16px, 4vw, 24px); /* Larger title font size on smaller screens */
+  }
+
+  .cardDescription {
+    font-size: clamp(12px, 2.5vw, 20px);
+  }
+
+  /* Navbar adjustments */
+  .navbar {
+    padding: 10px;
+  }
+
+  /* Navbar link font size */
+  .navLink {
+    font-size: 16px;
+  }
+}
+
+/* For very small screens (mobile) */
+@media screen and (max-width: 480px) {
+  /* Adjust card sizes for small mobile screens */
+  .card {
+    width: 70vw; /* Cards will take up more width */
+    height: 70vh;
+    padding: 6vw;
+    max-width: 70%;
+  }
+
+  /* Adjust text size for very small screens */
+  .cardText {
+    font-size: clamp(14px, 5vw, 22px);
+  }
+
+  .cardDescription {
+    font-size: clamp(10px, 4vw, 18px);
+  }
+  
+}

@@ -1,11 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const Student = require("../models/Student");
+const bcrypt = require('bcryptjs');
 
-// Register a student
 router.post("/", async (req, res) => {
   try {
-    const student = new Student(req.body);
+    const { name, email, password } = req.body;
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const student = new Student({
+      name,
+      email,
+      password: hashedPassword,
+      favorites: [],
+      createdAt: Date.now()
+    });
     const savedStudent = await student.save();
     res.status(201).json(savedStudent);
   } catch (err) {
@@ -13,17 +22,19 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get all students
-router.get("/", async (req, res) => {
+router.get("/:email", async (req, res) => {
   try {
-    const students = await Student.find().populate('favorites');
-    res.status(200).json(students);
+    const student = await Student.findOne({ email: req.params.email }).populate('favorites');
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    res.status(200).json(student);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Get a specific student (with populated favorites)
+
 router.get("/:id", async (req, res) => {
   try {
     const student = await Student.findById(req.params.id).populate('favorites');
@@ -36,7 +47,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Add an event to a student's favorites
 router.post("/:id/favorites", async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
@@ -44,11 +54,9 @@ router.post("/:id/favorites", async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    const eventId = req.body.eventId; // The ID of the event to be added
-
-    // Check if the event ID already exists in the favorites array
+    const eventId = req.body.eventId;
     if (!student.favorites.includes(eventId)) {
-      student.favorites.push(eventId); // Add event ID to favorites
+      student.favorites.push(eventId);
       await student.save();
       res.status(200).json(student);
     } else {
@@ -59,7 +67,6 @@ router.post("/:id/favorites", async (req, res) => {
   }
 });
 
-// Remove an event from a student's favorites
 router.delete("/:id/favorites/:eventId", async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
@@ -71,7 +78,7 @@ router.delete("/:id/favorites/:eventId", async (req, res) => {
     const index = student.favorites.indexOf(eventId);
 
     if (index > -1) {
-      student.favorites.splice(index, 1); // Remove event ID from favorites
+      student.favorites.splice(index, 1);
       await student.save();
       res.status(200).json(student);
     } else {
@@ -79,6 +86,18 @@ router.delete("/:id/favorites/:eventId", async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Check if the email belongs to a student
+router.get("/check-role/:email", async (req, res) => {
+  const { email } = req.params;
+  try {
+    const student = await Student.findOne({ email });
+    if (student) return res.json({ role: "student" });
+    res.status(404).json({ message: "Not a student" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 });
 
